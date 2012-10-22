@@ -1,0 +1,384 @@
+\section*{8.5 Tridiagonal methods for symmetric matrices}%{{{1
+
+Symmetric tridiagonal matrices may arise naturally and can be obtained using the Householder reduction.
+\begin{equation}
+T=
+	\left(
+	\begin{matrix}
+		a_1 & b_1 & 	&  		& \dots & 0\\
+		b_1 & a_2 & b_2 & 		&  		& \\
+		   & b_2 & a_3 & \ddots   & 		& \\
+		\vdots 	&  &\ddots  & \ddots	& \ddots	& \vdots\\
+			& 	  & 	& \ddots		& \ddots		& b_{n-1} \\
+		0	& \dots	  & 	& 		& b_{n-1}& a_n 
+	\end{matrix}
+	\right)
+\end{equation}
+
+\subsection*{8.5.1 Eigenvalues by bisection}%{{{2
+
+\begin{definition}(The principal matrix):
+	An $m\times m$ matrix, $P$, is an $m\times m$ principal submatrix of an $n\times n$ matrix, $A$, if $P$ is obtained from $A$ by removing any $n - m$ rows and the same $n - m$ columns. 
+\end{definition}
+\begin{definition}(The leading principal matrix): An $m\times m$ leading principal matrix of an $n\times n$ matrix, $T$, 
+is the principal matrix that consists of the $m\in [1,m]$ first rows and coloumns of $P$.
+\end{definition}
+
+Let $T$ be an $n\times n$ symmetric tridiagonal matrix, and let $T_r$ be an $r\times r$ principal submatrix of $T$.
+Define the polynomial $p_r(x) = \det(T_r - xI)$ where $n\in[1,n]$ and $p_0=1$. It is straight forward to show that the characteristic polynomial can be written
+as the recursive relation
+\begin{align}
+	p_r(x) = (a_r-x)p_{r-1}(x) - b_{r-1}^2p_{r-2}(x).
+\end{align}
+The eigenvalues $\lambda_i$ solves the characteristic polynomial $p_n(\lambda_i)=0$. The zeroes can be found using the bisection method
+%\begin{algorithm}[h]
+
+\begin{algo}
+{
+%
+	(The Bisection Method):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\$x$ and $y$ where
+	\\$y<z$ and $p_n(x)p_n(y)<0\Leftrightarrow y<\lambda_i,\,z>\lambda_i$ for some $i\in[1,n] $.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\One eigenvalue $\lambda_i \approx x$ on the interval $[y,z]$.
+%
+}\\
+\line(1,0){150}
+\begin{algorithmic}
+%
+\While{$|y-z|>\epsilon(|y|+|z|)$}
+	\State{$x=(y+z)/2$}
+	\If{$p_n(x)p_n(y)<0$}
+		\State{$z\gets x$}
+	\Else{}
+		\State{$y\gets x$}
+	\EndIf
+\EndWhile{}
+%
+\end{algorithmic}
+\line(1,0){150}
+\end{algo}
+%\end{algorithm} 
+%
+(Easy to see why this works: make drawing with $x,y,z$ and $p_n(x)$).
+$p_n$ scales as $\mathcal O(n)$ and the error is approximately halved each iteration.
+
+%}}}2
+
+\subsection*{8.5.2 Sturm Sequence Methods}%{{{2
+
+%\begin{theorem}
+%(The interlacing property):
+%Tssume that $T\in\mathbb R^{n\times n}$ is symmertic and that $T_r$ is the leading principal matrix of $T$ and that $\lambda_i(T_r)$ is the $i$'th eigen value
+%of $T_r$ where $\lambda_{i-1}\le\lambda_{i}$. Then
+%\begin{equation*}
+%	\lambda_{r+1}(T_{r+1}) \le 
+%	\lambda_{r}(T_{r}) \le 
+%	\lambda_{r}(T_r+1) \le 
+%	\dots
+%	\lambda_{1}(T_r) \le 
+%	\lambda_{1}(T_{r-1}) .
+%\end{equation*} 
+%\end{theorem}
+%
+\begin{theorem}
+(Sturm Sequence Property):
+Assume that the tridiagonal matrix $T\in\mathbb R^{n\times n}$ has no zero subdiagonal elements, 
+and that $T_r$ is the leading principal matrix of $T$ and that 
+$\lambda_i(T_r)$ is the $i$'th eigen value of $T_r$ where $\lambda_{i-1}\le\lambda_{i}$. Then
+\begin{equation*}
+	\lambda_{r}(T_{r}) <
+	\lambda_{r-1}(T_r-1) <
+	\lambda_{r-1}(T_r) <
+	\dots
+	\lambda_{1}(T_r-1) <
+	\lambda_{1}(T_{r}) .
+\end{equation*} 
+Moreover, assume that $a(\lambda)$ denotes the number of sign changes in the sequence
+\begin{equation*}
+	\{p_0(\lambda),\, p_1(\lambda),\dots,p_n(\lambda)\},
+\end{equation*}
+then $a(\lambda)$ denotes the number of eigenvalues which is less then $\lambda$. Here the convention is used that $p_r(\lambda)$ has the opposite sign of
+$p_{r-1}(\lambda)$ if $p_r(\lambda)=0$.  
+\end{theorem}
+%
+%\begin{theorem}
+%(Gershgorin Circle Theorem):
+%if $X^{-1}AX = D + F$ (Shur decomposition) where $D=\diag(d_1,d_2,\dots,d_n)$ and $F$ is strictly upper tridiagonal, then
+%\begin{equation*}
+%	\lambda(A) \subseteq \bigcup^n_{i=1} D_i
+%\end{equation*}
+%where $D_i = \{z\in\mathbb C | z-d_i|\le \sum^n_{j=1}|f_{ij}|\}$
+%\end{theorem}
+%
+
+%
+\begin{theorem}
+(Gershgorin):
+Suppose $A\in\mathbb R^{n\times n}$ is symmertic and that $Q\in\mathbb R^{n\times n}$ is orthogonal.
+If $X^{-1}AX = D + F$ (Shur decomposition) where $D=\diag(d_1,d_2,\dots,d_n)$ and $F$ is strictly upper triangular, then
+\begin{equation*}
+	\lambda(A) \subseteq \bigcup^n_{i=1} [d_i-r_i,d_i+r_i]
+\end{equation*}
+where $r_i = \sum^n_{j=1}|f_{ij}|$ for $i\in[i,n]$.
+\end{theorem}
+%
+%
+From the Gershgorin theorem it follows that $\lambda_k(T)\in[y,z]$ where 
+\begin{equation}
+	y = \min_{1\le i\le n} a_i - |b_i| - |b_i-1|, \qquad z = \max_{1\le i\le n} a_i + |b_i| + |b_i-1|
+\end{equation}
+where we have defined $b_0=b_n=0$. 
+From the Sturm Sequence Property if follows that the following algoritmhm will pruduce a sequense of subintervals that are repeatedly
+halved in length, but which always contains $\lambda_k(T)$. 
+%
+%
+\begin{algo}
+{
+%
+	(The Bisection Method With The Sturm Sequence's):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\ $y = \min_{1\le i\le n} a_i - |b_i| - |b_i-1|, 
+	\\ \qquad z = \max_{1\le i\le n} a_i + |b_i| + |b_i-1|$, 
+	\\$k\in [1,n]$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\$\lambda_k \approx (y+z)/2$ as the $k$'th eigenvalue.
+%
+}\\
+\line(1,0){150}
+\textbf{}
+\begin{algorithmic}
+%
+\While{$|y-z|>\epsilon(|y|+|z|)$}
+	\State{$x=(y+z)/2$}
+	\If{$a(x)\ge n-k$}
+		\State{$z\gets x$}
+	\Else{}
+		\State{$y\gets x$}
+	\EndIf
+\EndWhile{}
+%
+\end{algorithmic}
+\line(1,0){150}
+\end{algo}
+$a(\lambda)$ is calculated in $\mathcal O(n(n+1)/2)$ flops since $p_n(\lambda)$ is $\mathcal O(n)$ 
+flops. The error is small even when the eigenvalues regardless of their amplitude. Remember that 
+for the tridiagonal QR iteration the error is $\propto ||T||_2$.
+
+
+\begin{itemize}
+\item
+This is basically the same algorithm as the Bisection Method, 
+but instead of keeping track of the location of the eigenvalues by monitoring $\sign(p_n(x)p_n(y))$
+we monitor $a(x)$ instead. Each time $a(x)<a(y)$, we know that there is at least 
+one eigenvalue in the range $[x,y]$.
+\item
+If we want to find many eigenvalues, then the algorithm can be speeded up considerably if we keep 
+track of location of the eigenvalues after the first iteration.
+\item
+For a general symmetric matrix, the tridiagonal matrix must be calculated first 
+(ie. using Householder or Lanzcos).
+\item 
+Eigenvectors can be found using i.e. inverse iteration since tridiagonal systems can be solved in 
+$\mathcal O(n)$ flops.
+\end{itemize}
+
+%}}}2
+
+\subsection*{8.5.3 Eigensystems of Diagonal Plus Rank-1 Matrices}%{{{2
+
+For the divide and conquer method in the next section it is necessary to compute the eigenvalues
+and the eigenvectors of matrices on the form $D+\rho zz^T$, where $D\in\mathbb R^{n\times n}$ is 
+diagonal and $z\in\mathbb R^n$ and $\rho\in+\mathbb R$.
+Two important properties of such matrices follows.
+%
+%
+%
+\begin{theorem} ():
+Assume that $D=\diag(d_1,d_2,\dots,d_n)\in\mathbb R^{n\times n}$ and that $d_1>d_2>\dots>d_n$.
+Assume that $0\neq \rho \in\mathbb R$ and that $z\in\mathbb R^n$ has no zero components.
+If $V$ is orthogonal s.t.
+\begin{equation*}
+	V^T(D+\rho zz^T)V = \diag(\lambda_1,\, \lambda_2,\,\dots,\,\lambda_n)
+\end{equation*}
+with $\lambda_1\ge\lambda_2\ge\dots\ge\lambda_n$, then
+\begin{enumerate}[(a):]
+	\item The $\lambda_i$'s are the zeroes of $f(\lambda)=1+\rho z^T(D-\lambda I)^{-1}z$.
+	\item If $\rho>0$ then $\lambda_1>d_1>\lambda_2>\dots>d_n$ and if
+		$\rho<0$ then $d_1>\lambda_1>d_2>\dots>\lambda_n$.
+	\item The eigenvector $v_i$ is a multiple of $(D-\lambda I)^{-1}z$.
+\end{enumerate}
+\end{theorem}
+%
+From this theorem we see that $V$ can be computed by first finding the eigenvalues of 
+$D+\rho zz^T$ (a), i.e. using a Newton like procedure like the bisection method. 
+Note that $(D-\lambda I)^{-1}$ is very easy to calculate and that the bisection
+method can be used directly since the intervals that contains the eigenvalues are known
+from (b).
+The eigenvectors can then be found by normalizing $(D-\lambda I)^{-1}z$ (c).
+(See inverse iteration.)
+
+The below theorem is important for the next algorithm.
+\begin{theorem} ():
+If $D=\diag(d_1,\dots,d_n)$ and $z\in\mathbb R^n$, then there exists an orthogonal matrix
+$V_1$ such that if $V_1^TDV_1=\diag(\mu_1,\mu_2,\dots,\mu_n)$ and $w=V_1^Tz$ then
+\begin{align}
+	\mu_1>\mu_2>\dots>\mu_n,
+\end{align}
+$w_i\neq 0$ for $i=1:r$ and $w_i=0$ for $i = r+1:n$
+\end{theorem}
+
+%2}}}
+
+\subsection*{8.5.4 A Divide and Conquer Method}%{{{2
+
+This method computes the Shur decomposition 
+\begin{equation}
+	Q^TTQ = \Lambda = \diag(\lambda_1,\lambda_2,\dots,\lambda_n),\, Q^TQ = I
+\end{equation}
+of the tridiagonal matrix $T$ in a way that is suitable for paralell computation.
+The algorithm has three steps: (1) $T$ is split in two, (2) the Shur decomposition of the
+two parts are computed and (3) the matrices are combined to $\Lambda$.
+%
+The three steps are listed below.
+%
+\begin{enumerate}[(a):]
+%
+%
+\item 
+Assume for now that $n=2m$ and let
+\begin{equation}
+	v = e_m^{(2m)} + \theta e_{m+1}^{(2m)} = \smatrix {e_m^{(m)} \\ \theta e_{1}^{(m)}}
+\end{equation}
+where $e_m^{(2m)}$ is the unit vectors with 2m elements where the 
+$m$'th entry is $1$ and all other entries are 0.
+Which gives an $\tilde T = T - \rho vv^T$ which is identical to $T$ except for the $4$ middle 
+entries
+\begin{equation}
+	\tilde T(m:m+1,m:m+1) = 
+	\smatrix{
+		a_m-\rho & b_m-\rho\theta\\
+		b_m-\rho\theta & a_{m+1} - \rho\theta^2
+	} 
+\end{equation}
+and by demanding that $\theta = b_m/\rho$ we get
+\begin{equation}
+	\tilde T(m:m+1,m:m+1) = 
+	\smatrix{
+		\tilde a_m & 0\\
+		0 & \tilde a_{m+1}
+	} 
+\end{equation}
+where $\tilde a_m = a_m-\rho$ and $\tilde a_{m+1} = a_{m+1}-b_m^2/\rho$.
+Now $\tilde T$ can be written on the form
+\begin{equation}
+	\tilde T = 
+	\smatrix{
+		T_1 & 0\\
+		0 & T_2
+	} 
+\end{equation}
+where
+\begin{align}
+T_1&=
+	\smatrix{
+		a_1 & b_1 & 	&  		& \dots & 0\\
+		b_1 & a_2 & b_2 & 		&  		& \\
+		   & b_2 & a_3 & \ddots   & 		& \\
+		\vdots 	&  &\ddots  & \ddots	& \ddots	& \vdots\\
+			& 	  & 	& \ddots		& \ddots		& b_{m-1} \\
+		0	& \dots	  & 	& 		& b_{m-1}& \tilde a_m 
+	}\\
+%
+T_2&=
+	\smatrix{
+		\tilde a_{m+1} & b_{m+1} & 	&  		& \dots & 0\\
+		b_{m+1} & a_{m+2} & b_{m+2} & 		&  		& \\
+		   & b_{m+2} & a_{m+3} & \ddots   & 		& \\
+		\vdots 	&  &\ddots  & \ddots	& \ddots	& \vdots\\
+			& 	  & 	& \ddots		& \ddots		& b_{n-1} \\
+		0	& \dots	  & 	& 		& b_{n-1}& a_n 
+	}
+\end{align}
+and $T_1,T_2 \in \mathbb R^{m\times m}$.
+%
+%
+\item Assume that we have two $m\times m$ orthogonal matrices $Q_1$ and $Q_2$ such that 
+$Q_1^TT_1Q_1 = D_1$ and $Q_2^TT_2Q_2 = D_2$. 
+We set
+\begin{equation}
+	U = 
+	\smatrix{
+		Q_1 & 0\\
+		0 & Q_2
+	}, \,
+	D = 
+	\smatrix{
+		D_1 & 0\\
+		0 & D_2
+	}.
+\end{equation}
+%
+%
+\item Now 
+\begin{equation}
+	U^TTU = U^T\bigg(\smatrix{T_1 & 0 \\ 0 & T_2}+\rho vv^T\bigg)U = D + \rho zz^T 
+\end{equation}
+with
+\begin{equation}
+	z = U^Tv = \smatrix {Q_1e_m^{(m)} \\ Q_2\theta e_{1}^{(m)}}
+\end{equation}
+%
+%
+\end{enumerate}
+%
+%
+
+Now the eigenvalues and the eigenvectors can be found easily using the results of the 
+last subsection. (See the discussion)
+
+%}}}2
+
+\subsection*{8.5.5 A parallel Implementation}%{{{2
+
+The divide and conquer method is well suited for parallelization. I.e. for a $2^pm$ matrix, the 
+matrix can be split $p$ times and distributed to $2^p$ processors. The algorithm is perfectly load
+balanced. $2^{p-1}+2_{p-1}+\dots+2$ gluing operations has to be done to bring it on the desired
+form $D+zz^T$.
+
+
+%}}}2
+
+\subsection*{Summary : }
+\begin{table}[h]
+\begin{tabular}{cccc}
+\hline
+Algorithm 	& When to use it 	& Stability 	& Error ....\\
+bisec 	& must know limits of lambda 	& stable	& num pres..\\
+ss 	& all subdiag elem != 0 	& stable 	& num prec ....\\
+DC	& full Shur D. can be aquired, Eff in P & stable 	& num prec ....\\
+\hline
+\end{tabular}
+\end{table}
+
+%}}}1
+
+
+% vim:foldmethod=marker

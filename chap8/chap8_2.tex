@@ -1,0 +1,198 @@
+\section*{8.2 Power Iterations}%{{{1
+
+\subsection*{8.2.1 The Power method} %{{{2
+
+This is a method that can be used on a general square, non singular and real matrix 
+$A\in\mathbb R^{(n\times n)}$.
+Given a 2-norm $q^{(0)}\in\mathbb R^n$, this method produces a sequence of vectors 
+$q^{(k)}$
+%
+%
+\begin{algo}
+{
+%
+	(The Power Method):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\$q^{(0)}\in\mathbb R^n$.
+	\\$A\in\mathbb R^{n\times n}$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\One eigenvector $q^{(k)}$.
+%
+}\\
+\line(1,0){150}
+\begin{algorithmic}
+%
+\For{$k=1,2,3,\dots,k$}
+	\State{$z\gets A q^{(k-1)}$}
+	\State{$q^{(k)}\gets z/\norm{z}_2$}
+	\State{$\lambda^{(k)} \gets [q^{(k)}]^T A q^{(k)}$}
+\EndFor{}
+%
+\end{algorithmic}
+\line(1,0){150}
+\end{algo}
+%
+%
+As long as the eigenvector of the eigenvalue with the largest eigenvalue is unique,
+$q^{(k)}$ will converge to an eigenvector.
+%
+The convergence is proportional to $|\lambda_1/\lambda_2|^{2k}$ where $\lambda_1$ is the
+eigenvalue with the largest modulo, and $\lambda_2$ is the eigenvalue with the second largest modulo.
+%
+The error $|\lambda - \lambda_k|$ for some $\lambda\in\lambda(A)$ can be shown to be
+\begin{equation}
+	|\lambda - \lambda_k| \le \norm{Aq^{(k)} - \lambda^{(k)}q^{(k)}}_2\sqrt 2.
+\end{equation}
+
+%}}}2
+
+\subsection*{8.2.2 Inverse Iteration} %{{{2
+
+Suppose that the power method is applied with $A$ replaced with $(A-\lambda I)^{-1}$
+given that $\lambda$ is very close to, but not equal to, one of the eigenvalues of $A$.
+This matrix is nearly singular, and can easily be proven to have the same eigenvectors as $A$.
+Assume that $A$ has the eigenvalues $\lambda^i$ with the corresponding eigevectors $v_i$, and that 
+$xv_i^T = a_i$. Now
+\begin{align}
+	(A-\lambda I)^{-1}x = \sum_i a_i/(\lambda-\lambda_i) v_i.
+\end{align}
+If $\lambda\approx\lambda_i$ than the component of $x$ that is parallel to $v_i$
+will become dominant.
+
+%}}}2
+
+\subsection*{8.2.3 The Rayleigh Quotient Iteration} %{{{2
+This algorithm is an extended version of the inverse iteration algorithm where
+the value of $\lambda$ is updated each iteration.
+\begin{equation}
+	\lambda = r(x) = \frac{x^TAx}{x^Tx}
+\end{equation}
+where $r(x)$ is called the Rayleigh quotient of $x$.
+%
+%
+\begin{algo}
+{
+%
+	(The Raileigh Quotient Method):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\$x_0\in\mathbb R^n$, $\norm{x_0}_2=0$.
+	\\$A\in\mathbb R^{n\times n}$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\An eigenvector $x_k$ and its corresponding eigenvalue $\lambda$.
+%
+}\\
+\line(1,0){150}
+\begin{algorithmic}
+%
+\For{$k=1,2,3,\dots,k$}
+	\State{$\mu_k\gets r(x_k)$}
+	\State{solve $(A-\mu k I)z_{k+1} = x_k$ for $z_{k+1}$}
+	\State{$x_{k+1} \gets z_{k+1}/\norm{z_{k+1}}_2$}
+\EndFor{}
+%
+\end{algorithmic}
+\line(1,0){150}
+\end{algo}
+%
+%
+The Raileigh Quotient Method almost always converges, and when it does the convergence is cubic.
+
+%}}}2
+
+\subsection*{8.2.3 Orthogonal Iteration}
+
+The power method can be generalized to compute higher dimensional invariant subspaces.
+Let $r$ be an integer $r\in[1,n]$, and let $Q$ be an matrix $Q\in\mathbb R^{n\times r}$.
+The method of orthogonal iteration generates a sequence of matrices $\{ Q_k \}$
+%
+%
+\begin{algo}
+{
+%
+	(Orthogonal iteration):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\$Q_k\in\mathbb R^{n\times r}$.
+	\\$A\in\mathbb R^{n\times n}$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\$Q_k,\,\ran{Q_k}=D_r(A)$ .
+%
+}\\
+\line(1,0){150}
+\begin{algorithmic}
+%
+\For{$k=1,2,3,\dots,k$}
+	\State{$Z_k\gets A Q_{k-1}$}
+	\State{$Q_kR_k\gets Z_k$ (QR factorization)}
+\EndFor{}
+%
+\end{algorithmic}
+\line(1,0){150}
+\end{algo}
+%
+%
+
+
+%The following theorem is useful to understand the method.
+%\begin{theorem}
+%(Invariant subspaces):
+%Assume that $A\in\mathbb R^{(n\times n)}$ is symmetric and that 
+%\begin{equation}
+%Q=
+%\begin{matrix}
+%	\\
+%	\smatrix{Q_1 & Q_2} 
+%	\\
+%	\begin{matrix}
+%		r & n-r
+%	\end{matrix}
+%\end{matrix}
+%\end{equation}
+%is orthogonal. If $\ran(Q_1)$ is an invariant subspace, then
+%\begin{equation}
+%Q^TAQ = D =
+%\begin{matrix}
+%	\\
+%	\smatrix{D_1 & 0 \\ 0 & D_2} 
+%	&
+%	\begin{matrix}
+%		r \\ n-r
+%	\end{matrix}
+%	\\
+%	\begin{matrix}
+%		r & n-r
+%	\end{matrix}
+%\end{matrix}
+%\end{equation}
+%and $\lambda(A) = \lambda(D_1)\bigcup\lambda(D_2)$.
+%\end{theorem}
+
+
+
+%}}}1
+%vim:foldmethod=marker
+
+
