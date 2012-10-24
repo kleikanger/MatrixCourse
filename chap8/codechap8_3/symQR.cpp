@@ -65,24 +65,26 @@ void trigiagonalize(mat &m_a, int i_n)
 		c_w = c_p - ( (d_beta / 2.0) * dot(c_p, c_v) ) * c_v;
 		m_a(k+1, k) = norm( m_a.col(k).subvec(k+1, i_n-1), 2);
 		m_a(k, k+1) = m_a(k+1, k);
-		m_a.row(k).subvec(k+2, i_n-1).fill(0.0);
-		m_a.col(k).subvec(k+2, i_n-1).fill(0.0);
 		m_a(span(k+1, i_n-1), span(k+1, i_n-1)) 
 			= m_a(span(k+1, i_n-1), span(k+1, i_n-1)) - c_v * c_w.t() - c_w * c_v.t();
+	}
+	for (int k=0; k<i_n-2; k++)
+	{
+		m_a.row(k).subvec(k+2, i_n-1).fill(0.0);
+		m_a.col(k).subvec(k+2, i_n-1).fill(0.0);
 	}
 }
 
 int main() 
 {
-
-	const int i_n = 6;
+	const int i_n = 100;
 	double d_beta;
 
 	colvec c_x = randu<colvec>(i_n);
 	colvec c_v;
 	
 	house(c_v, d_beta, c_x, i_n);
-	cout << "\n" << (eye(i_n, i_n) - d_beta * (c_v * c_v.t())) * c_x << "\n";
+	//cout << "\n" << (eye(i_n, i_n) - d_beta * (c_v * c_v.t())) * c_x << "\n";
 
 	mat m_a = randn(i_n, i_n);
 	for (int i=0; i<i_n; i++)
@@ -95,7 +97,8 @@ int main()
 	//	<< 4 << 8 << 3 << endr;
 
 	trigiagonalize(m_a, i_n);
-	cout << m_a;
+	cout << m_a.diag(1) - m_a.diag(-1);
+	cout << m_a.diag(0);
 
 	const int iter = 50;
 	const int n = 3;

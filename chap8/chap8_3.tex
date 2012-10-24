@@ -94,13 +94,153 @@ $k<n$, then $S_{k+1,k}=0$.
 Here four facts about the QR-iteration and tridiagonal matrices are stated.
 %
 \begin{enumerate}[(a):]
-\item .
-\item .
-\item .
-\item .
+\item Preservation of form: If $T=QR$ is the QR-factorization of a symmetric tridiagonal matrix
+$T\in\mathbb R^{n\times n}$, then $Q$ has lower bandwidth 1 and $R$ has upper bandwidth 2, 
+and it follows that
+\begin{equation}
+	T_+ = RQ = Q^T(QR)Q = Q^TTQ
+\end{equation}
+is also symmetric and tridiagonal.
+\item Shifts: If $s\in\mathbb R$ and $T-sI=QR$ is the QR-factorization, then
+\begin{equation}
+	T_+ = RQ + sI =Q^TTQ.
+\end{equation}
+Is also tridiagonal. This is called the shifted $QR$ step.
+\item Perfect shifts: If $T$ is unreduced, then the first $n-1$ columns of $T-sI$ are independent 
+regardless of $s$ Thus, if $s\in\lambda(T)$ and $QR=T-sI$ is a QR-factorization, then $r_{nn}=0$
+and the last column of $T_+=RQ-sI$ equals $sI(:,n)=se_n$.
+\item Cost: If $T\in\mathbb R^{n\times n}$ is tridiagonal, then it's QR factorization can be computed
+by applying a sequence of $n-1$ Givens rotations which requires $\mathcal O(n)$ flops.
+If the rotations are to be accumulated, then $\mathcal O(n^2)$ flops are required.
+The algorithm is listed in Alg. \ref{algQRFacTridiagMat}.
 \end{enumerate}
+%
+%
+\begin{algo}
+{
+%
+	(QR factorization of a tridiagonal matrix):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\The symmetric and tridiagonal matrix $T\in\mathbb R^{n\times n}$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\$Q$ if the rotations are accumulated.
+	\\$R$ as $T$?.
+%
+}\\
+\line(1,0){150}
+\begin{algorithmic}
+%
+\For{k=1:n-n}
+	\State{$[c,s]=givens(T_{kk},T_{k+1,k})$}
+	\State{$m=\text{min}(k+2,n)$}
+	\State{$T(k:k+1,k:m) = \smatrix{c&s\\-s&c}^TT(k:k+1,k:m)$}
+\EndFor{}
+%
+\end{algorithmic}
+\label{algQRFacTridiagMat}
+\line(1,0){150}
+\end{algo}
+%\end{algorithm} 
+%
 
 %}}}2
+
+\subsection*{8.3.4 Explicit Single Shift QR Iteration}%{{{2
+
+If $s$ is close to an eigenvalue then we suspect that $T_{n,n-1}$ will be small after a $QR$ step
+with shift $s$. This can be made very intuitive if we remember from the QR algorithm 
+that the convergence of the eigenvectors $v_1,\dots,v_n$ ($v_i=Qe_i$) converges with a rate 
+proportional to $|\lambda_i/\lambda_{i+1}|$.
+The shift shifts the eigenvalues with $-s$, and if 
+$s\approx\lambda_{i+1}$, we increase the separation 
+between the eigenvalues and thereby accelerate the convergence. 
+
+Below follows a small example to show why the single shift 
+speeds up the convergence of the $n$'th eigenvector.
+This example is in the context of the orthogonal iteration algorithm, which is simply an
+alternative formulation of the $QR$-algorithm. (?? Ask Morten)
+We write $T$ as the spectral decomposition
+\begin{equation}
+	T = \sum_i \lambda_i v_i^Tv_i
+\end{equation}
+We introduce the shifted matrix $\tilde A = A - sI$, where all eigenvectors are shifted by $s$ while
+the eigenvectors are the same. 
+The multiplication of the $i$'th row of $Q_k$ ($q^{k}_i=Q_ke_i$) yields
+\begin{equation}
+	Tq^k_i = \sum_i \lambda_i (v_i^Tq^k_i) v_i
+\end{equation}
+where all $q^k_i$'s will be rotated in the direction of the eigenvector with the shifted 
+eigenvector with the eigenvalue with the largest modulo. 
+In the process of the QR factorization of $TQ_k\to Q_{k+1}R_{k+1}$, the following happens:
+$q^{k+1}_1\propto q^k_1$, but
+$q^{k+1}_2$, is set to be orthogonal to $q_1$, and will therefore tend against the eigenvector 
+with the eigenvalue with the second largest modulo. And so it goes for $q^{k+1}_3,q^{k+1}_4,\dots$.
+If $s\approx\lambda_n$, all $q^{k+1}_i$ will have a small component of $v_n$ except to $q^{k+1}_n$
+which is set to be orthogonal to $q^{k+1}_i,i\neq n$, and therefor will have a large component 
+of $v_n$. Now $I\lambda$ must be added to $T$ to reset the eigenvalue to it's correct value.
+
+A reasonable guess for the $n$'th eigenvalue is simply $s=a_n$ since $T$ already is close to it's
+diagonal form. An other possibility is to choose $s$ to be the eigenvalue of the block.
+\begin{equation}
+	\smatrix{a_{n-1}&b_{n-1}\\b_{n-1}&a_n}
+\end{equation}  
+which is 
+\begin{equation}
+	s=a_n+d-\sign{}(d)\sqrt{d^2+b_{n-1}^2},\,(a_{n-1}-a_n)/2.
+\end{equation}
+This is called the Wilkinson shift.
+%
+Both strategies are known to give a cubic convergence.
+%
+%
+\begin{algo}
+{
+%
+	(Explicit Single Shift QR):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\The symmetric and tridiagonal matrix $T\in\mathbb R^{n\times n}$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\$T$ as the Shur decomposition.
+	\\$Q$ where $Qe_i$ is the $i$'th eigenvector.
+%
+}\\
+\line(1,0){150}
+\begin{algorithmic}
+%
+\State{$T=U_0^TAU_0$}
+\For{k=1,2,\dots}
+	\State{Determine the shift $s\in\mathbb R$}
+	\State{$UR\gets T-sI$ (QR-factorization)}
+	\State{$T\gets RU+sI$}
+\EndFor{}
+%
+\end{algorithmic}
+\label{algQRSingleShiflExplicit}
+\line(1,0){150}
+\end{algo}
+%\end{algorithm} 
+%
+
+
+%}}}2
+
+\subsection*{8.3.5 }%{{{2
 
 %}}}1
 % vim:foldmethod=marker

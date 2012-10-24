@@ -1,4 +1,4 @@
-#include <armadillo>
+#include <armadillo.h>
 #include <iostream>
 #include <math.h>
 
