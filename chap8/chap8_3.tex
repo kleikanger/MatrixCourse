@@ -1,9 +1,106 @@
 \section*{8.3 The Symmetric QR Algorithm} %{{{1
 
-The 
+The symmetric QR-iteration can be made very efficient in two ways.
+\begin{enumerate}[(a):]
+	\item First, an orthogonal $U_0$ is calculated such that $U_0^T A U = T$ is tridiagonal.
+	With this reduction the iterates $T_k$ of Alg. \ref{algQRIterSimple} is also tridiagonal,
+	meaning that each iteration is reduced to $\mathcal O(n^2)$ flops.
+	\item The idea of shifts are introduces, boosting the convergence from linear to cubic.
+\end{enumerate} 
 
+\subsection*{8.3.1 Reduction to Tridiagonal Form}%{{{2
 
+If $A$ is symmetric, then it is possible to find an orthogonal $Q$ s.t. $Q^TAQ=T$ is tridiagonal.
+This is called the tridiagonal decomposition. Note that $T$ is symmetric since
+$T^T = (Q^TAQ)^T = T$.
+Below it is discussed how the tridiagonal decomposition can be computed using Householder matrices.
 
+A Householder matrix describes a reflection in the hyper surface $\text{span}(v_\bot)$, and can be 
+written on the general form $H = I - 2{vv^T}/{v^Tv}$. This is a reflection since, for a general 
+vector $x$, $Hx=x - 2({v^Tx}/{v^Tv})v$. It is always possible to find a Householder vector $v$, s.t. 
+$Hx\propto e_1$. Numerically this is an $\mathcal O(n)$ operation.
+
+For a $n\times n$ symmetric matrix $A$, the Householder reduction is found in a stepwise process
+\begin{enumerate}[(a):]
+	\item Find the $n-1\times n-1$ Householder matrix $H_1$ s.t. $H_1A(2:n,1)\propto e_1^{(n-1)}$
+	\item Find the $n-2\times n-2$ Householder matrix $H_2$ s.t. $H_1A(3:n,1)\propto e_1^{(n-2)}$
+	\item $\dots$
+	\item Find the $2\times 2$ Householder matrix $H_{n-2}$ s.t. $H_1A(n-1:n,1)\propto e_1^{(2)}$
+	\item Assume that
+	\begin{equation}
+	\tilde H_k =	
+	\begin{matrix}
+		\\	
+		\smatrix{I & 0 \\ 0 & H_{k}}
+		&
+		\begin{matrix}		
+			k \\ n-k
+		\end{matrix}
+		\\
+		\begin{matrix}		
+			k & n-k
+		\end{matrix}
+	\end{matrix}
+	\end{equation}
+	for $k \in \{1,2,3,\dots,n-2\}$. Now
+	\begin{align}
+		&\tilde H_{n-2} \tilde H_{n-1} \dots \tilde H_1 A = \text{Matrix on upper Hessenberg form.}\\
+		&\tilde H_{n-2} \tilde H_{n-1} \dots \tilde H_1 A 
+			\tilde H_{1} \tilde H_{2} \dots \tilde H_{n-2} = T = \text{Tridiagonal matrix}
+	\end{align}
+Note, from the definition of $H_k$, that $H_k=H_k^T$. The last equation above is easy
+to understand if the individual operations $H_1AH_1$ is inspected. If this is done, it is also easy 
+to see why the Householder reduction is unable to take $A$ to the diagonal form.
+\end{enumerate}
+The Householder reduction involves $4n^3/3$ flops if the symmetries of $A$ is exploited.
+
+%}}}2
+
+\subsection*{8.3.2 Properties of the Tridiagonal Decomposition}%{{{2
+
+Two theorems about the tridiagonal decomposition are stated below.
+\begin{definition}(Krylov Matrix):
+A Krylov Matrix is a matrix on the form
+\begin{equation}
+	K(A,v,k) = [v, Av, A^2v,\dots,A^{k-1}v],\, A\in\mathbb R^{n\times n},\,v\in\mathbb R^n.
+\end{equation}
+\end{definition}
+%
+\begin{theorem}():
+If $Q^TAQ=T$ is the tridiagonal decomposition of the symmetric matrix $A\in \mathbb R^{n\times n}$,
+then $Q^TK(A, Q(:,1),n) =R$ is upper triangular.
+%
+If $R$ is nonsingular then $T$ is unreduced
+\footnote{The tridiagonal decomposition is reduced if one of the sub/super-diagonal entries is zero.}
+. If $R$ is singular and $k$ is the smallest index 
+where $R_{kk}=0$ then $k$ is the smallest index where $T_{k,k-1}=0$. 
+\end{theorem}
+%
+\begin{theorem}(The implicit Q Theorem):
+Suppose $Q=(q_1,q_2,\dots,q_n)$ and $V=(v_1,v_2,\dots,v_n)$ are orthogonal matrices with the property
+that both $Q^TAQ=T$ and $V^TAV=S$ are tridiagonal where $A\in\mathbb R^{n\times n}$ is symmetric.
+Let $k$ denote the smallest index where $T_{k+1,k}=0$, with the convention that $k=n$ is $T$ is 
+unreduced. If $v_1=q_1$ than $v_i=\pm q_i$ and $T_{i,i-1} = S_{i,i-1}$ for $i=2:k$. Moreover, if
+$k<n$, then $S_{k+1,k}=0$.
+\begin{equation}
+.
+\end{equation}
+\end{theorem}
+
+%}}}2
+
+\subsection*{8.3.3 The QR Iteration and Tridiagonal Matrices}%{{{2
+
+Here four facts about the QR-iteration and tridiagonal matrices are stated.
+%
+\begin{enumerate}[(a):]
+\item .
+\item .
+\item .
+\item .
+\end{enumerate}
+
+%}}}2
 
 %}}}1
 % vim:foldmethod=marker
