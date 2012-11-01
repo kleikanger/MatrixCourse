@@ -491,11 +491,79 @@ the methods of chapter 8 (Bisection Methods, Sturm Sequence Methods, ..).
 
 \subsubsection*{Error analysis}
 
-\subsubsection*{Advantages of the implicit shift approach}
+It can be shown that the QR algorithm is backwards stable in the sense that the 
+computed Shur decomposition $\tilde D$ is orthonormally similar to a matrix $A+E$ where $E$ is a matrix of tiny norm 
+$\norm{E}_2 \approx \ts u \norm{T}_2$
+\footnote{$\ts u = \frac1210^{-15}$ for doubles.}
+. 
+It can be shown that this implies that the computed eigenvalues $\tilde\lambda_i$ have an error
+\begin{equation}
+	|\tilde \lambda_i-\lambda_i|\approx \ts u \norm{A}_2.
+\quad\footnote{
+$\norm{A}_2 = \max_{\norm{x}_2=1}{\norm{Ax}_2}$, $\norm{x}_2 = \left[\sum_i |x_i|^2 \right]^{1/2}$.
+}
+\end{equation}
+Here, $\norm{A}_2$ corresponds to the largest eigenvalue of $A$. 
+In other words, the smallest eigenvalue will converge to the 
+$t-\log_{10}(\max{\lambda(A)/\min{\lambda(A)}})$'th decimal, while 
+the largest will converge to numerical precision.
+%
+Loosely speaking,
+the accuracy of which the $i$'th eigenvector $v_i$ is calculated is dependent on the separation
+of the $\lambda_i$ to the rest of the eigenvalues. For some special matrices the 
+eigenvectors can not be reliably computed using the QR algorithm (ref).
+
+\subsubsection*{Advantages of the implicit algorithm over the explicit algorithm.}
 
 \begin{enumerate}[(i):]
-\item Stability.
-\item Speed.
+\item Stability: Generally more reliable than the explicit shift approach.
+mplementation of the implicit method given in [2].
+However, in comparing these algorithms one should
+keep in mind that they may be used to calculate the eigen-
+vectors of A by maintaining a running product of the P~.
+When this is done, the work done in the QR steps is negli-
+gible compared with the work done in forming the eigen-
+vectors, and the relative merits of the algorithms must be
+decided on other grounds.
+One reason for preferring either the implicit algorithm
+or our algorithm to the explicit algorithm is the following.
+Ordinarily all the eigenvalues of a symmetric matrix are
+determined to the same absolute accuracy by the elements
+of the matrix, so that a very small eigenvalue is calculated
+with high relative error. However, there are matrices with
+widely varying elements whose eigenvalues are relatively
+insensitive to small relative perturbations in the elements
+of the matrix. The use of a large shift in the explicit
+algorithm with such a matrix will degrade the smaller
+diagonal elements and hence the smaller eigenvaiues.
+The cure is to rearrange the matrix so t h a t the smaller
+elements appear in the lower right-hand corner, and the
+eigenvalues are found in ascending order. However, this
+may be impossible or inconvenient. This subject is treated
+in greater detail in [1].
+Numerically, our algorithm and the implicit algorithm
+are quite similar. Both are stable in the sense that the
+Volume 13 / Number 6 / J u n e , 1970
+successive As are very nearly similar to one another. The
+error made in calculating a given element depends only
+on the size of its immediate neighbors and not on the size
+of the shift, so that the methods may be used to find
+eigenvalues in any order.
+The principal drawback of the implicit algorithm is that
+the shift k is used only once to determine $S_1$. If dI is
+so large that the computed $d_1 - k$ is equal to $d_1$, the al-
+gorithm effectively works with a zero shift, and the con-
+vergence of the QR iteration may be retarded. However,
+there are two mitigating factors. First, only a moderately
+accurate shift is required to establish fast convergence.
+Second, even with a zero shift, some of the el may become
+negligible after not too many iterations, decomposing the
+matrix into the direct sum of tridiagonal submatrices. A
+well-coded QR routine will work only with the submatrices,
+and it is unlikely that the shift will be small with respect
+to the new 1-1 element.
+	
+\item Speed: Faster. Negligible if $Q$ is to be calculated.
 \end{enumerate}
 
 

@@ -1,0 +1,91 @@
+\section*{8 Computing the Singular Value Decomposition}
+
+\subsubsection*{Some general facts about the SVD:}
+\begin{definition}(Singular values:)
+	The singular values of the matrix $A\in\mathbb C^{n\times m}$ is the 
+	square root of the eigenvalues of the square matrix $A^TA$.
+\end{definition}
+\begin{theorem}
+	The singular values $\{\sigma_i\}$ of the matrix $A\in\mathbb C^{n\times m}$ 
+	are non-negative and real.
+\end{theorem}
+\begin{proof}
+	Assume that $v_i$ are the eigenvectors of $A^TA$ with the eigenvalues $\lambda_i$,
+	then 
+	\[
+		\norm{Av_i}_2^2 = v_i^\dagger A^\dagger A v = v_i^\dagger \lambda_i v_i = \lambda_i. 
+	\]
+	meaning that $\sigma_i = \sqrt{\lambda_i}$ are real and non-negative.
+\end{proof}
+\begin{theorem}(The Singular Value Decomposition:)
+	Let $A$ be an $m\times n$ complex matrix of rank $r$. Then there exist an $m\times m$
+	orthogonal matrix $U$, an $n\times n$ orthogonal matrix $V$ and an $n\times m$ diagonal 
+	matrix $\Sigma$ such that 
+	\[
+		A = U \Sigma V^\dagger,
+	\]
+	where $\diag (\Sigma) = (\sigma_1,\sigma_2,\dots,\sigma_r, 0,0,\dots,0,)$ and 
+	$\sigma_1\ge\sigma_2\dots\ge\sigma_r\ge0$.
+\end{theorem}
+\begin{definition}
+	The columns of $U$ are called the left singular vectors of $A$ and the columns and the 
+	columns of $V$ are called the right singular vectors of $A$.
+\end{definition}
+The singular value decomposition of $A$ is not unique unless $\text{rank}(A)=n$. In general 
+different $U$ and $V$ can be used. It can be shown that the reduced singular value decomposition
+is unique. 
+The reduced singular decomposition is the decomposition 
+$A = \tilde U\tilde \Sigma\tilde V^\dagger$, where $\tilde\Sigma$ is an $n\times r$
+matrix such that $\diag{}(\tilde\Sigma)$ consists of all the singular values and has none zeros.
+
+\subsubsection*{The connection to the Schur Decomposition:}
+
+There are important relationships between the singular value decomposition of a matrix
+$A$, and the Schur decompositions of the symmetric matrices 
+\begin{equation}
+	A^TA,\, AA^T \text{ and } \smatrix{0 & A^T \\ A & 0}
+\end{equation}
+Assume that $U^TAV=\diag(\sigma_1,\dots,\sigma_n)$. Then
+\begin{align}
+	&V^TA^TAV = \diag(\sigma_1^2,\sigma_2^2,\dots,\sigma_n^2)\in\mathbb R^{n\times n}
+	\label{eq861}\\
+	&U^TAA^TU = \diag(\sigma_1^2,\sigma_2^2,\dots,\sigma_n^2,0,\dots,0)\in\mathbb R^{n\times m}
+\end{align}
+Moreover, if we decompose $U$
+\begin{align}
+	U= 
+\begin{matrix}
+	\\
+	\begin{matrix}
+	[ & U_1 & U_2 & ]\\
+	  &	n & m-n &
+	\end{matrix}
+\end{matrix}
+\end{align}
+and define the orthogonal matrix $Q\in\mathbb R^{(n+m)\times(n+m)}$
+\begin{align}
+	Q=\frac1{\sqrt 2}\smatrix{V & V & 0 \\ U_1 & -U_2 & \sqrt2U_2}
+\end{align}
+then
+\begin{align}
+	Q^T\smatrix{0 & A^T \\ A & 0 } Q 
+	= \diag(\sigma_1,\dots,\sigma_n,-\sigma_1,\dots,-\sigma_n,\underbrace{0,\dots,0}_{m-n})
+\end{align}
+
+\subsection*{8.6.1 Pertubation Theory and Properties}
+\subsection*{8.6.2 The SVD Algorithm}
+In this section a variant of the QR-algorithm is used to compute the SVD-decomposition of 
+a matrix $A\in\mathbb R^{n\times m}$ with $m\ge n$.
+Eq. \eqref{eq861} suggest that we
+\begin{enumerate}[(i):]
+	\item form $C=A^TA$,
+	\item use the symmetric QR- algorithm to compute 
+	$V_1^TCV_1 = \diag(\sigma_1^2,\sigma_2^2,\dots\sigma_i^2)$,
+	\item apply $QR$ with column pivoting to $AV_1$ obtaining $U^T(AV_1)\Pi=R$.
+\footnote{$\Pi$ is the pivoting matrix.}
+\end{enumerate}
+Note that since $U$ and $(AV_1)$ are orthogonal, then $R$ must be as well meaning that $R=I$.
+(It is easy to show that for a triangular matrix to be orthogonal it must be diagonal).
+Now we have that $(\Pi^TU^T A V_1 = \Sigma)$
+
+Read Ex. 5.3.2 in G\&L to find out why this approach is inaccurate.
