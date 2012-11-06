@@ -8,7 +8,7 @@
 using namespace std;
 using namespace arma;
 
-#define ARMA_NO_DEBUG
+//#define ARMA_NO_DEBUG
 
 namespace libMC
 {
@@ -352,13 +352,13 @@ void fullQR(const char ch_meth, colvec &c_eig, mat m_a, const int in, const doub
    *  int : im  : number of rows
    *  int : in  : number of columns
    * Output:
-   *  mat : m_a : is changed to bidiagonal form.
+   *  colvec 	: c_diag  	: changed to the diagonal entries in the b.d. matrix.
+   *  colvec 	: c_sdiag 	: changed to the sup diagonal entries --- .
    *
    */
-void bidiagonalize(mat &m_a, int im, int in)
+void bidiagonalize(colvec &c_diag, colvec &c_sdiag, mat m_a, int im, int in)
 {
 	colvec c_u, c_v;
-	mat m_temp;
 	int k;
 
 	for (k=0; k<in; k++)
@@ -380,6 +380,53 @@ void bidiagonalize(mat &m_a, int im, int in)
 
 		}
 	}
+	c_diag = m_a.diag(0);
+	c_sdiag = m_a.diag(1);
+}
+/*
+   *
+   * Bidiagonalization of nxm matrix where (m >= n)
+   * See Golub & Loan Alg. 5.4.2 (Householder Bidiagonalization)
+   * I have not attempted to optimize this algorithm.
+   *
+   * Imput: 
+   *  mat : m_a : Matrix to be bidiagonalized
+   *  int : im  : number of rows
+   *  int : in  : number of columns
+   * Output:
+   *  colvec 	: c_diag  	: changed to the diagonal entries in the b.d. matrix.
+   *  colvec 	: c_sdiag 	: changed to the sup diagonal entries --- .
+   *  mat 		: m_v 		: rows contains the Householder vectors.
+   * 		(m_v has Upper Hessenberg form and is (im-1xim-1))
+   *
+   */
+void bidiagonalize(colvec &c_diag, colvec &c_sdiag, mat &m_v, mat m_a, int im, int in)
+{
+	colvec c_u, c_v;
+	int k;
+	m_v = zeros(in-2, im-1);
+
+	for (k=0; k<in; k++)
+	{
+		c_u = m_a( span(k, im-1), k);
+		c_u(0) += c_u(0)/fabs(c_u(0)) * norm(c_u, 2);
+		c_u = c_u / norm(c_u, 2);
+		m_a( span(k, im-1), span(k, in-1))
+			= m_a( span(k, im-1), span(k, in-1))
+			- 2.0 * c_u * c_u.t() * ( m_a(span(k, im-1), span(k, in-1)) );
+		if (k<in-2)
+		{
+			c_v = m_a(k, span(k+1, in-1)).t();
+			c_v(0) += c_v(0)/fabs(c_v(0)) * norm(c_v, 2);
+			c_v = c_v / norm(c_v, 2);
+			m_a( span(k, im-1), span(k+1, in-1))
+				= m_a( span(k, im-1), span(k+1, in-1))
+				- 2.0 * ( m_a(span(k, im-1), span(k+1, in-1)) )* c_v * c_v.t();
+			m_v(k, span(k, im-2)) = c_v.t();
+		}
+	}
+	c_diag = m_a.diag(0);
+	c_sdiag = m_a.diag(1);
 }
 
 

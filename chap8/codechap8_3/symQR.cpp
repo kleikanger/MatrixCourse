@@ -97,8 +97,12 @@ int main()
 	for (int i=0; i<i_n; i++)
 		cout << c_eig(i) << "\n";
 
-	libMC::bidiagonalize(m_a, i_n, i_n);
+	//libMC::bidiagonalize(c_diag, c_sdiag, m_a, i_n, i_n);
+	mat m_v;
+	libMC::bidiagonalize(c_diag, c_sdiag, m_v, m_a, i_n, i_n);
 	cout << "\n bidiag \n\n" << m_a << "\n";
+	cout << "\n bidiag \n\n" << m_v << "\n";
+	cout << c_diag <<  "\n" << c_sdiag << "\n";
 	
 
 	/*	

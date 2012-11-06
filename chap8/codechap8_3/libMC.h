@@ -14,7 +14,8 @@ namespace libMC
 	
 	void fullQR(const char ch_meth, colvec &c_eig, mat m_a, const int in, const double dtol);
 	
-	void bidiagonalize(mat &m_a, const int in, const int im);
+	void bidiagonalize(colvec &c_diag, colvec &c_sdiag, mat m_a, const int im, const int in);
+	void bidiagonalize(colvec &c_diag, colvec &c_sdiag, mat& m_v, mat m_a, const int im, const int in);
 }
 
 #endif
