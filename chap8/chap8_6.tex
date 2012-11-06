@@ -1,6 +1,6 @@
-\section*{8 Computing the Singular Value Decomposition}
+\section*{8 Computing the Singular Value Decomposition} %{{{1
 
-\subsubsection*{Some general facts about the SVD:}
+\subsubsection*{Some general facts about the SVD:} %{{{2
 \begin{definition}(Singular values:)
 	The singular values of the matrix $A\in\mathbb C^{n\times m}$ is the 
 	square root of the eigenvalues of the square matrix $A^TA$.
@@ -38,7 +38,9 @@ The reduced singular decomposition is the decomposition
 $A = \tilde U\tilde \Sigma\tilde V^\dagger$, where $\tilde\Sigma$ is an $n\times r$
 matrix such that $\diag{}(\tilde\Sigma)$ consists of all the singular values and has none zeros.
 
-\subsubsection*{The connection to the Schur Decomposition:}
+%}}}2
+
+\subsubsection*{The connection to the Schur Decomposition:} %{{{2
 
 There are important relationships between the singular value decomposition of a matrix
 $A$, and the Schur decompositions of the symmetric matrices 
@@ -72,8 +74,12 @@ then
 	= \diag(\sigma_1,\dots,\sigma_n,-\sigma_1,\dots,-\sigma_n,\underbrace{0,\dots,0}_{m-n})
 \end{align}
 
+%}}}2
+
 \subsection*{8.6.1 Pertubation Theory and Properties}
-\subsection*{8.6.2 The SVD Algorithm}
+
+\subsection*{8.6.2 The SVD Algorithm} %{{{2
+
 In this section a variant of the QR-algorithm is used to compute the SVD-decomposition of 
 a matrix $A\in\mathbb R^{n\times m}$ with $m\ge n$.
 Eq. \eqref{eq861} suggest that we
@@ -88,4 +94,16 @@ Note that since $U$ and $(AV_1)$ are orthogonal, then $R$ must be as well meanin
 (It is easy to show that for a triangular matrix to be orthogonal it must be diagonal).
 Now we have that $(\Pi^TU^T A V_1 = \Sigma)$
 
+The multiplication $A^TA$ is unwise from a numerical standpoint since small elements $A_{ij}<\sqrt{\ts u}$
+will disappear due to round off error.
+\footnote{
 Read Ex. 5.3.2 in G\&L to find out why this approach is inaccurate.
+Ex: for $A^T=\smatrix{1 & 0 & 10^{-3} \\ 1 & 10^{-3} & 0}$, $A^TA$ is singular in float arithmetics.
+}
+
+
+%}}}2
+
+%}}}1
+
+% vim:foldmethod=marker

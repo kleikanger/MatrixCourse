@@ -125,7 +125,7 @@ class bisec {
 		   * double* : pd_to : off diagonal elements of the tridiagonal matrix b0, b1, ...
 		   * 	where bn-1 is not used.
 		   * int  	: in 	: dim(tridiagonal matrix)
-		   * int    : ik : the number of the eigenvalue that is to be searched for
+		   * int    : ik 	: the number of the eigenvalue that is to be searched for
 		   * double : d_epsilon : error threshold
 		   *
 		   */

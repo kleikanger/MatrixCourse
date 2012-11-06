@@ -341,47 +341,45 @@ void fullQR(const char ch_meth, colvec &c_eig, mat m_a, const int in, const doub
 	}
 	c_eig = c_diag;
 }
-	
-void bidiagonalize(mat &m_a, int in)
+/*
+   *
+   * Bidiagonalization of nxm matrix where (m >= n)
+   * See Golub & Loan Alg. 5.4.2 (Householder Bidiagonalization)
+   * I have not attempted to optimize this algorithm.
+   *
+   * Imput: 
+   *  mat : m_a : Matrix to be bidiagonalized
+   *  int : im  : number of rows
+   *  int : in  : number of columns
+   * Output:
+   *  mat : m_a : is changed to bidiagonal form.
+   *
+   */
+void bidiagonalize(mat &m_a, int im, int in)
 {
-	colvec c_v, c_temp;
+	colvec c_u, c_v;
 	mat m_temp;
-	double d_beta;
-	int j;
+	int k;
 
-	for (j=0; j<in; j++)
+	for (k=0; k<in; k++)
 	{
-		cerr << "a";
-		c_temp = m_a(span(j, in-1), j);
-		cerr << c_temp;
-		cerr << "a";
-		house(c_v, d_beta, c_temp, in-j);
-		cerr << "a";
-		m_temp = eye(in-j, in-j) - d_beta * c_v * c_v.t();
-		cerr << "a";
-		m_a(span(j, in-1), span(j, in-1)) 
-			= m_temp * m_a(span(j, in-1), span(j, in-1));
-		cerr << "a";
-		m_a(span(j+1, in-1), j) = c_v.subvec(1, in-j-1);
-		if (j<in-2)
+		c_u = m_a( span(k, im-1), k);
+		c_u(0) += c_u(0)/fabs(c_u(0)) * norm(c_u, 2);
+		c_u = c_u / norm(c_u, 2);
+		m_a( span(k, im-1), span(k, in-1))
+			= m_a( span(k, im-1), span(k, in-1))
+			- 2.0 * c_u * c_u.t() * ( m_a(span(k, im-1), span(k, in-1)) );
+		if (k<in-2)
 		{
-		cerr << "b";
-			c_temp = m_a(j, span(j+1, in-1)).t();
-		cerr << "b";
-			house(c_v, d_beta, c_temp, in-j-1);
-		cerr << "b";
-			m_temp = eye(in-j-1, in-j-1) - d_beta * c_v * c_v.t();
-			m_a(span(j, in-1), span(j+1, in-1))
-				= m_a(span(j, in-1), span(j+1, in-1)) * m_temp;
-		cerr << "b";
-			cout << m_a(j, span(j+2, in-1));
-			cout << "\n" << c_v;
-			cout << in << " " << j << "\n"; 
-			cout << "\n" <<  c_v.subvec(1, in-j-2) ;
-		cerr << "b";
+			c_v = m_a(k, span(k+1, in-1)).t();
+			c_v(0) += c_v(0)/fabs(c_v(0)) * norm(c_v, 2);
+			c_v = c_v / norm(c_v, 2);
+			m_a( span(k, im-1), span(k+1, in-1))
+				= m_a( span(k, im-1), span(k+1, in-1))
+				- 2.0 * ( m_a(span(k, im-1), span(k+1, in-1)) )* c_v * c_v.t();
+
 		}
 	}
-
 }
 
 
