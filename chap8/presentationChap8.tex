@@ -103,7 +103,7 @@ The QR iteration algorithm $-$ same basic idea as the Power Method.
 %
 \column{7cm}
 \begin{itemize}
-	\item Main idea: $q_n = A^n q_0$ converges to: 
+	\item Main idea: $q_n = A^n q_0 /  \norm{A^n q_0}_2$ converges to: 
 		\[ \lim_{n\to\infty} A^n q / \norm{A^nq}_2 = v_s \]
 		given that $v_s^Tq\neq0$.
 		Here $\lambda_s$ is the eigenvalue with the largest magnitude
@@ -119,6 +119,7 @@ The QR iteration algorithm $-$ same basic idea as the Power Method.
 %
 \column{5cm}
 \begin{algo}
+\begin{footnotesize}
 {
 %
 	(The Power Method):
@@ -148,6 +149,7 @@ The QR iteration algorithm $-$ same basic idea as the Power Method.
 %
 \end{algorithmic}
 \line(1,0){120}
+\end{footnotesize}
 \end{algo}
 \end{columns}	
 \end{frame} %}}}1
@@ -259,24 +261,27 @@ will converge to Shur decomposition.
 \begin{itemize}
 %	\item (Nothing but an extension of orthogonal subspace iterations with $r=n$).
 \item
-	We want to calculate $T_k=Q_k^TR_kQ_k$ directly without explicitly multiplying with $A$.
-\item 
-	We use Eq. \eqref{eq:qr} from the last slide.
-\begin{equation}
-	Q_kR_k = AQ_{k-1} \Leftrightarrow R_kQ^T_{k-1} = Q_k^TA_k \notag\label{eq824_1} 
-\end{equation}
-Then
-\begin{align}
-	&T_{k-1} = Q_{k-1}^T A Q_{k-1}  = Q_{k-1}^T Q_{k} R_{k} = \tilde Q_k R_k\label{eq824_2} \\
-	&T_k = Q_k^T A Q_{k}  = R_k Q_{k-1}^T Q_{k} = R_k \tilde Q_k 	\notag\label{eq824_3} 
-\end{align}
-\item If a is normal, $T_k$ will converge to $\diag(\lambda_1,\lambda_2,\dots,\lambda_n)$.
+	In the QR-algorithm, $T_k=Q_k^TAQ_k$ is calculated directly, without explicitly multiplying with $A$.
+	\begin{enumerate}
+		\item[]
+			We use Eq. \eqref{eq:qr} from the last slide.
+			\begin{equation}
+				Q_kR_k = AQ_{k-1} \Leftrightarrow R_kQ^T_{k-1} = Q_k^TA_k \notag\label{eq824_1} 
+			\end{equation}
+			Then
+			\begin{align}
+				&T_{k-1} = Q_{k-1}^T A Q_{k-1}  = Q_{k-1}^T Q_{k} R_{k} = \tilde Q_k R_k\label{eq824_2} \\
+				&T_k = Q_k^T A Q_{k}  = R_k Q_{k-1}^T Q_{k} = R_k \tilde Q_k 	\notag\label{eq824_3} 
+			\end{align}
+	\end{enumerate}
+\item If $A$ is normal, $T_k$ will converge to $\diag(\lambda_1,\lambda_2,\dots,\lambda_n)$.
 \end{itemize}	
 
 \column{5cm}
 %
 %
 \begin{algo}
+\begin{footnotesize}
 {
 %
 	(QR iteration):
@@ -308,6 +313,7 @@ Then
 \end{algorithmic}
 \line(1,0){120}
 \label{algQRIterSimple}
+\end{footnotesize}
 \end{algo}
 %
 %
@@ -399,6 +405,7 @@ T=
 %
 %
 \begin{algo}
+\begin{footnotesize}
 {
 %
 	(Explicit Single Shift QR):
@@ -430,6 +437,7 @@ T=
 \end{algorithmic}
 \label{algQRSingleShiflExplicit}
 \line(1,0){120}
+\end{footnotesize}
 \end{algo}
 %\end{algorithm} 
 %
@@ -535,9 +543,9 @@ T=
 \frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS:} 
 	\begin{itemize}
 		\item
-		We want to form a matrix $U$ which is a product of givens transformations
+		We want to form a matrix $U$ which is a product of Givens transformations
 		\begin{align}
-			&U = U_{n-1}U_{n-2}\dots U_{1}, \notag\\ 
+			&U = U_{1}U_{2}\dots U_{n-1}, \notag\\ 
 			&U_i = 
 			\smatrix{ 
 				I^{i-1\times i-1} 	& 0 	& 0 \\ 
@@ -563,6 +571,8 @@ T=
 	%\smatrix{ T_{11}-s \\ T_{21} } \propto \smatrix{ 1 \\ 0} \label{eq835}. 
 				\Rightarrow
 				G_1 \propto  \smatrix{T_{11}-s & -T_{21} \\ T_{21} & T_{11}-s}
+				\Rightarrow
+				Ue_1 \propto \smatrix{T_{11}-s\\T_{21} \\0\\0\\ \vdots}
 			\end{equation}
 		\item
 			Correct since
@@ -631,7 +641,7 @@ T=
 		.
 		\end{footnotesize}
 	\end{equation}
-\item Now we have shown how one can 
+\item $\Rightarrow U = U_{4}U_{3}U_{2}U_{1}$ will bring $T$ on tridiagonal form.
 \end{itemize}
 \end{frame}%}}}1
 
@@ -658,10 +668,10 @@ z_i & b_p & a_q & b_p \\
 }
 =
 \smatrix{
-a_i& b_i & 0 & 0 \\
-b_i & a_p & b_p & z_p \\
-0 & b_p & a_q & b_p \\
-0 & z_p & b_q & a_r 
+\tilde a_i& \tilde b_i & 0 & 0 \\
+\tilde b_i &\tilde a_p &\tilde b_p &\tilde z_p \\
+0 &\tilde b_p &\tilde a_q &\tilde b_p \\
+0 &\tilde z_p &\tilde b_q &\tilde a_r 
 }
 \end{align}
 where $(p,q,r)=(i+1, i+2, i+3)$. We simply need to find a $b_is+z_ic = 0$
@@ -735,16 +745,34 @@ $T$ as the Shur decomposition.
 
 \begin{frame} \frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} %{{{1
 \begin{itemize}
-	\item deflation = speedup
-	\item $D_k$ on reduced tridiagonal form = speedup.
+	\item deflation = speedup. Ex: $\approx 26 \times 3$ flops $+$ formation of $G_1$.
+		\begin{align}
+			T_k = \smatrix{
+				\times & \times & 		0 	& 0 & 0 & 0 \\
+				\times & \times & \times 	& 0 & 0 & 0 \\
+				0 & \times & \times	& \times 	& 0 & 0 \\
+				0 &  0 & \times	& \times 		& 0 & 0 \\
+				0 &  0 & 0	& 0 	& \times & 0 \\
+				0 &  0 & 0	& 0 	& 0 & \times \\
+			}
+		\end{align}
+	\item $D_k$ on reduced tridiagonal form = speedup. Ex: $\approx 25\times2$ flops $+$ formation of $G_1$.
+		\begin{align}
+			T_k = \smatrix{
+				\times & 0 & 		0 	& 0 & 0 & 0 \\
+				0 & \times & \times 	& 0 & 0 & 0 \\
+				0 & \times & \times	& \times 	& 0 & 0 \\
+				0 &  0 & \times	& \times 		& 0 & 0 \\
+				0 &  0 & 0	& 0 	& \times & 0 \\
+				0 &  0 & 0	& 0 	& 0 & \times \\
+			}
+		\end{align}
 \end{itemize}
 \end{frame}%}}}1
 
-\begin{frame}
+\begin{frame} %{{{1
 \frametitle{CONVERGENCE AND ERROR}
-%Convergence facts ... pros, cons, ... 
-\begin{columns}
-%
+\begin{columns}%
 \column{6cm}
 \begin{figure}%{{{3
 \begin{center}
@@ -843,17 +871,73 @@ $T$ as the Shur decomposition.
 %
 %
 \end{columns}
-\end{frame}
+\end{frame}%}}}1
 
-\begin{frame} \frametitle{OVERVIEW:}
-Comparison: bisect., jackobi.. How to calc eigenvec.
-\end{frame}
+\begin{frame} \frametitle{OVERVIEW:}%{{{1		
+		\begin{itemize}
+			\item Tridiagonalization algorithms:
+				\begin{table}
+					\begin{Tiny}
+						\centering
+						\begin{tabular}{lll}
+							\hline
+							\hline
+							\\
+							Method & Cost (With unitary mat.) & Convergence (Without Unitary mat.) \\
+							\\
+							\hline
+							\\
+							Householders tridiagonalization (dense matrices) 	& $4n^3/3 $ & $ 8n^3/3 $ \\
+							Givens tridiagonalization (dense matrices)			& %$4n^3/3$ 
+							 &  \\
+							Lanczos tridiagonalization (sparse matrices)		& & \\
+							\\
+							\hline
+							\hline
+						\end{tabular}
+					\end{Tiny}
+				\end{table}
+			\item Eigen solvers for real symmetric tridiagonal matrices:
+				\begin{table}
+					\begin{Tiny}
+						\centering
+						\begin{tabular}{llll}
+							\hline
+							\hline
+							\\
+							Method & Output & Cost/Iteration & Convergence \\
+							\\
+							\hline
+							\\
+							Power iteration 			& $v_i, \lambda_{i}=\max{(\{\lambda_i\})}$ & $\mathcal O(n^{2})$& Linear\\ 
+							Inverse iteration 			& $v_i$ (with imput $\lambda_{i})$ & $\mathcal O(n)$ (for tridiag. mat.) & Linear\\ 
+							Rayleigh quotient iteration & $v_i$, $\lambda_{i}$ & $\mathcal O(n)$ &	Cubic \\
+							Bisection (Sturm Sequence) method 	& The required $\lambda_i$ 	& $\mathcal O(n^2)$ & Linear \\
+							Bisection method 		& a $\lambda_i$ in a given inteval.	& $\mathcal O(n)$ & Linear \\
+							QR algorithm 				& $\{\lambda_i\}$ and $\{v_i\}$ or only $\{\lambda_i\}$ & $\mathcal O(n^2)$ or $\mathcal O(n)$ & Cubic\\
+							Jacobi eigenvalue algorithm	& $\{\lambda_i\}$ 	& $\mathcal O\mathcal(n^3)$(**) & Quadratic \\
+							Divide-and-conquer 			& $\{\lambda_i\}$ 	& $\mathcal O\mathcal(n^{2})$(**) & \\
+							\\
+							\hline
+							\hline
+						\end{tabular}
+					\end{Tiny}
+				\end{table}
+				\begin{tiny}
+					(**) Suited for parallellization.
+				\end{tiny}
+		\end{itemize}
+\end{frame}%}}}
 
 \begin{frame}
-\frametitle{LAPACK: dsyev}
-\begin{center}
-	5X speedup
-\end{center}
+	\frametitle{CONCLUDING REMARKS}
+	\begin{itemize}
+		\item If only a few of the eigenvectors are required, then it is cheaper not to accumulate the similarity 
+			transformations and use inverse iterations to find the eigenvectors. 
+		\item If only some of the eigenvalues are required it is cheaper to use the bisection methods.
+		\item The paralell algorithms (Divide-and-conquer) outperforms the other algorithms when many cores are 
+			aviable.
+	\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -900,7 +984,8 @@ xSTEIN
 \end{frame}%}}}1
 
 \begin{frame} \frametitle{THE SVD ALGO:}
-\end{frame}
+\end{frame}%}}}1
+
 
 
 %\begin{frame}
