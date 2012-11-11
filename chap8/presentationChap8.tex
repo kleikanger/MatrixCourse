@@ -1,0 +1,981 @@
+\documentclass[a4paper,8pt]{beamer} %{{{1
+%\documentclass[a4paper,10pt]{thesis} 
+%\documentclass[a4paper,9pt]{article} 
+%\documentclass[a4paper,9pt]{article} 
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+%\usepackage{styfloats}
+\usepackage{algorithmicx}
+\usepackage{algorithm}  
+\usepackage{algpseudocode}
+\usepackage{subfigure}
+
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+\usepackage{epsfig} %for å lime inn filer
+
+%\usepackage{babel}  
+
+\newcommand{\ts}[1]{\textbf{#1}}
+\newcommand{\bra}[1]{\langle{#1}|}
+\newcommand{\ket}[1]{|#1\rangle{}}
+\newcommand{\abs}[1]{\left|{#1}\right|}
+\newcommand{\sign}[1]{\text{sign}{#1}}
+\newcommand{\diag}[1]{\text{diag}{#1}}
+\newcommand{\ran}[1]{\text{ran}({#1})}
+\newcommand{\norm}[1]{\lVert{#1}\rVert}
+
+\newcommand{\smatrix}[1]{\left[\begin{matrix} #1 \end{matrix}\right]}
+
+%\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{algo}{Algorithm}%[section]
+%\newtheorem{theorem}{Theorem}%[section]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{assumption}[theorem]{Assumption}
+%\newenvironment{proof}[1][Proof]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%\newenvironment{definition}[1][Definition]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%\newenvironment{example}[1][Example]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%\newenvironment{remark}[1][Remark]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%\newcommand{\qed}{\nobreak \ifvmode \relax \else
+%      \ifdim\lastskip<1.5em \hskip-\lastskip
+%      \hskip1.5em plus0em minus0.5em \fi \nobreak
+%      \vrule height0.75em width0.5em depth0.25em\fi} 
+
+% Define block styles
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=4.5em, text badly centered, node distance=1.8cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=12.5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+%\tikzstyle{linebw} = [draw, latex-']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+    minimum height=2em]
+
+%\usepackagefig} %for å lime inn filer
+
+%\usepackage{babel}  
+
+
+\usetheme[secheader]{Berlin}
+%\usetheme[secheader]{Berkeley}
+\usecolortheme{seahorse}%}}}1
+
+\begin{document}
+
+%\title{Title}
+%\author{Karl R. Leikanger}
+%\affiliation{University of Oslo, Physics department}
+
+%\maketitle
+%\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}  %{{{1
+\frametitle{INTRODUCTION:}
+\begin{itemize}
+\item The QR - algorithm: From the basic ideas to the optimized implementation.
+\item The SVD algorithm: 
+\end{itemize}
+\end{frame} %}}}1 
+
+\begin{frame} %{{{1
+\frametitle{THE GENERAL QR - ALGORITHM:}
+%\begin{itemize}
+%	\item 
+The QR iteration algorithm $-$ same basic idea as the Power Method.
+%\end{itemize}
+%
+%
+\begin{columns}
+%
+%
+\column{7cm}
+\begin{itemize}
+	\item Main idea: $q_n = A^n q_0$ converges to: 
+		\[ \lim_{n\to\infty} A^n q / \norm{A^nq}_2 = v_s \]
+		given that $v_s^Tq\neq0$.
+		Here $\lambda_s$ is the eigenvalue with the largest magnitude
+		and $v_s$ is the corresponding eigenvector. 
+	\item What happens? Spectral decomposition of $A$:
+		\[ A = \sum_i\lambda_i v_iv_i^T \]
+		 Multiplication with a vector of unit length yields 
+		\[ Aq_i = \sum \lambda_i v_iv_i^T q = \sum_i \lambda_i (v_i^Tq) v_i \]
+	\item Convergence proportional to (spesify) $\norm{\lambda_s}_2|/\norm{\lambda_t}_2$
+		where $\lambda_t$ is the eigenvalue with the second largest magnitude.
+\end{itemize}
+%
+%
+\column{5cm}
+\begin{algo}
+{
+%
+	(The Power Method):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\$q^{(0)}\in\mathbb R^n$, $\norm{q}_2=1$.
+	\\$A\in\mathbb R^{n\times n}$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\One eigenvector $q^{(k)}$.
+%
+}\\
+\line(1,0){120}
+\begin{algorithmic}
+%
+\For{$k=1,2,3,\dots,k$}
+	\State{$z\gets A q^{(k-1)}$}
+	\State{$q^{(k)}\gets z/\norm{z}_2$}
+	\State{$\lambda^{(k)} \gets [q^{(k)}]^T A q^{(k)}$}
+\EndFor{}
+%
+\end{algorithmic}
+\line(1,0){120}
+\end{algo}
+\end{columns}	
+\end{frame} %}}}1
+
+\begin{frame} %{THE GENERAL QR - ALGORITHM:} {{{1
+\frametitle{THE GENERAL QR - ALGORITHM:}
+%\begin{itemize}
+%	\item 
+The Power Method can be generalized to compute multiple eigenvectors.
+%\end{itemize}
+%
+%
+\begin{itemize}
+	\item Main idea:
+	\begin{enumerate}
+		\item 
+		Power method with many vectors $q^{(k)}_1,q^{(k)}_2,\dots$ simultaneously. 
+		\item	
+		Orthonormalization each iteration s.t. 
+		$q^{(k)}_1\gets q^{(k)}_1, q^{(k)}_2 \gets q^{(k)}_2 - q^{(k)}_1 {q^{(k)}_1}^Tq^{(k)}_2, \dots$
+		\item Now, each $q_i^{(k)}$ will converge to an eigenvector.
+		\item[-] 
+		$q_1^{(k)}$: converges exactly in the same way as $q^{(k)}$ in the power method.
+		\item[-]
+		$q_2^{(k)}$ can be any vector $\in\ran{A}$ orthogonal to $q_1^{(k)}$
+		$\Rightarrow$ it will converge to the eigenvector with the second largest eigenvalue. 
+		\item[-]
+		And so on....
+	\end{enumerate}
+	\item Orthonormalization is performed using the QR-factorization:
+	\begin{footnotesize}
+		\begin{align}
+		& Q_{k} R_k \xleftarrow{\text{QR fact.}} A Q_{k-1} \quad\Rightarrow \notag \\
+		& [q^{(k)}_1,q^{(k)}_2,\dots, q_n^{(k)}] 
+		\smatrix{\times & \times & \times & \dots & \times \\ 
+				0 		& \times & \times & \dots & \times \\
+				0 		& 0 	& \times & \dots & \times \\
+				\vdots  & 		& \vdots & 	& 	\vdots \\
+				0 & 0 & \dots & 0 & \times }
+		\xleftarrow{\text{QR fact.}} [ Aq^{(k-1)}_1, Aq^{(k-1)}_2,\dots, Aq_n^{(k-1)}] 
+		\label{eq:qr}
+		\end{align}
+	\end{footnotesize}
+\item As $Q_k$ converges s.t. $A = Q_k\approx Q_{k-1}$, $Q_kR_kQ_{k-1}^T \approx Q_k R_k Q_k^T$
+will converge to Shur decomposition.
+\end{itemize}
+\end{frame} %}}}1
+
+%\begin{frame} \frametitle{THE GENERAL QR - ALGORITHM:} %{{{1
+%\begin{columns}
+%%
+%%
+%\column{7cm}
+%\begin{itemize}
+%	\item 
+%	If we assume that $\lambda_i>\lambda_{i+1}$ then 
+%	the convergence of the $r$ first eigenvectors is proportional to $|\lambda_r/\lambda_{r+1}|$.
+%	(Will be specified later).
+%\end{itemize}
+%%
+%%
+%\column{5cm}
+%%%
+%\begin{algo}
+%{
+%
+%	(Orthogonal iteration):
+%
+%}\\
+%\textbf{Input: }
+%{
+%%
+%	\\$Q_0=I,\,Q_k\in\mathbb R^{n\times n}$.
+%	\\$A\in\mathbb R^{n\times n}$.
+%%
+%}\\
+%\textbf{Output: }
+%{
+%%
+%	\\$\ran{Q_k(:,1:r)}=D_r(A)$ ($D=$ the dominant subspace of $A$ of dimension $r$).
+%	\\The $r$ first diagonal elements of $T$ will converge to $(\lambda_1, \dots, \lambda_r)$.
+%%
+%}\\
+%\line(1,0){120}
+%\begin{algorithmic}
+%%
+%\For{$k=1,2,3,\dots,k$}
+%	\State{$Z_k\gets A Q_{k-1}$}
+%	\State{$Q_kR_k\gets Z_k$ (QR factorization)}
+%\EndFor{}
+%	\State{$T_k\gets Q^T_k A Q_k$ }
+%%
+%\end{algorithmic}
+%\line(1,0){120}
+%\label{algOrthoIi}
+%\end{algo}
+%%
+%%
+%%
+%\end{columns}	
+%\end{frame} %}}}1
+
+\begin{frame}% {THE GENERAL QR - ALGORITHM:} {{{1
+\frametitle{THE GENERAL QR - ALGORITHM:}
+\begin{columns}
+%
+%
+\column{7cm}
+\begin{itemize}
+%	\item (Nothing but an extension of orthogonal subspace iterations with $r=n$).
+\item
+	We want to calculate $T_k=Q_k^TR_kQ_k$ directly without explicitly multiplying with $A$.
+\item 
+	We use Eq. \eqref{eq:qr} from the last slide.
+\begin{equation}
+	Q_kR_k = AQ_{k-1} \Leftrightarrow R_kQ^T_{k-1} = Q_k^TA_k \notag\label{eq824_1} 
+\end{equation}
+Then
+\begin{align}
+	&T_{k-1} = Q_{k-1}^T A Q_{k-1}  = Q_{k-1}^T Q_{k} R_{k} = \tilde Q_k R_k\label{eq824_2} \\
+	&T_k = Q_k^T A Q_{k}  = R_k Q_{k-1}^T Q_{k} = R_k \tilde Q_k 	\notag\label{eq824_3} 
+\end{align}
+\item If a is normal, $T_k$ will converge to $\diag(\lambda_1,\lambda_2,\dots,\lambda_n)$.
+\end{itemize}	
+
+\column{5cm}
+%
+%
+\begin{algo}
+{
+%
+	(QR iteration):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\$Q_0=I,\,Q_0\in\mathbb R^{n\times n}$.
+	\\$A\in\mathbb R^{n\times n}$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\$T_k$ contains the eigenvalues of $A$ (Highest magnitude first). 
+	\\$Q_ke_i$ is the $i$'th eigenvector of $A$.
+%
+}\\
+\line(1,0){120}
+\begin{algorithmic}
+%
+\State{$T_0\gets \tilde Q_0^T A \tilde Q_{0}$}
+\For{$k=1,2,3,\dots,k$}
+	\State{$\tilde Q_kR_k\gets T_{k-1}$ (QR factorization)}
+	\State{$T_k\gets R_{k}\tilde Q_{k-1}$}
+\EndFor{}
+%
+\end{algorithmic}
+\line(1,0){120}
+\label{algQRIterSimple}
+\end{algo}
+%
+%
+
+\end{columns}
+\end{frame} %}}}1
+
+\begin{frame}[label=framelb1]  %{{{1
+\frametitle{THE QR - ALGORITHM FOR HERMITIAN MATRICES }
+\begin{itemize}
+\item The performance of the above QR - Algorithm is poor:
+	\begin{enumerate}
+		\item Each iteration is $\mathcal O(n^3)$.
+		\item The convergence can be very slow if the modulus of a pair of eigenvalues are close
+		\[ \text{dist}(\text{span}(q_1^{(k)},q_2^{(k)},\dots,q_{n-1}^{(k)})
+		,\text{span}(q_1,q_2,\dots,q_{n-1})) \propto \mathcal O(|\lambda_{n-1}/\lambda_n|)^k \]
+		(ref:G\&L p. 411)	
+		\hyperlink{dist span}{\beamergotobutton{(*)}}
+	\end{enumerate}
+\item When $A$ is Hermitian, the convergence can be considerably improved by:
+	\begin{enumerate}
+		\item Reducing $A$ to a symmetric tridiagonal real matrix $T$.
+		\item Introducing single shifts. 
+	\end{enumerate}
+\end{itemize}
+\end{frame} %}}}1
+
+\begin{frame}[label=tridiagonalizationofa]  %{{{1
+\frametitle{TRIDIAGONALIZATION OF A}
+Reduction to symmetric tridiagonal form:
+\begin{itemize}
+	\item Any Hermitian matrix $A^\dagger = A$ is unitarily similar to a real symmetric tridiagonal matrix:
+\begin{equation}
+H^\dagger AH = T,\, 
+T=
+	\left(
+	\begin{matrix}
+		a_1 & b_1 & & & 0\\
+		b_1 & a_2 & b_2 & & \\
+		& b_2 & a_3 & \ddots & \\
+		& & \ddots	& \ddots & b_{n-1} \\
+		0& & & b_{n-1}& a_n 
+	\end{matrix}
+	\right),
+	\, a_i, b_i \in \mathbb R.
+\end{equation}
+	\item
+		The Householder reduction to tridiagonal form is an $\mathcal O(n^3)$ operation, and reduces the cost of the 
+		QR - iterations from an $\mathcal O(n^3)$ operation to an $\mathcal O(n)$ operation. 
+		($\mathcal O(n^2)$ if the rotations are accumulated).
+	\item 
+		$T$ and $A$ has the same eigenvalues, while the eigenvectors 
+		is different. In general, if $Tv_i = \lambda_iv_i$, then $A H^T v_i = \lambda_i H^Tv_i$.
+\end{itemize}	
+\begin{footnotesize}
+	[Householders transformations:] %(Show stepwise with illustrations). 
+	\hyperlink{householders explained}{\beamergotobutton{(*)}} 
+\end{footnotesize}
+	%\[ HAH^T = T ,\, T\in\mathbb R^n\]
+\end{frame} %}}}1
+
+\begin{frame}  %{{{1
+\frametitle{INTRODUCING SHIFTS}
+\begin{columns}
+
+\column{7cm}
+\begin{itemize}
+	%\item Assume that $\lambda(T) = \{\lambda_1,\lambda_2,\dots,\lambda_n \}$.
+	%and that $\lambda_i\ge\lambda_{i+1}$. 
+	\item We can shift all the eigenvalues $\lambda_i\gets\lambda_{i}-s$ 
+	by setting $T\gets T-sI$.
+	\item 
+	If $s$ is close to an eigenvalue then we suspect that 
+	$T_{n-1,n}$ will be small after a $QR$ step with shift $s$. 
+	\begin{enumerate}
+	%This can be made very intuitive if we remember from the QR algorithm 
+	%that the 
+	\item
+	Convergence towards the eigenvectors $q^{(k)}_1,\dots,q^{(k)}_{n-1}$
+	proportional to $|\lambda_{n-1}/\lambda_{n}|$.
+	If $s\approx\lambda_{n}$, we increase the separation 
+	between the eigenvalues and thereby accelerate the convergence. 
+	\end{enumerate}
+	\item Wilkinson Shifts: Is an eigenvalue of the $2\times2$ block $T(n:n+1, n:n+1)$, which
+	will be close to an eigenvalue of $T$. %because of the tridiagonal form of T.
+\end{itemize}
+
+\column{5cm}
+%
+%
+\begin{algo}
+{
+%
+	(Explicit Single Shift QR):
+%
+}\\
+\textbf{Input: }
+{
+%
+	\\The symmetric and tridiagonal matrix $T\in\mathbb R^{n\times n}$.
+%
+}\\
+\textbf{Output: }
+{
+%
+	\\$T$ as the Shur decomposition.
+	\\$Q$ where $Qe_i$ is the $i$'th eigenvector.
+%
+}\\
+\line(1,0){120}
+\begin{algorithmic}
+%
+\State{$T=U_0^TAU_0$}
+\For{k=1,2,\dots}
+	\State{Determine the shift $s\in\mathbb R$}
+	\State{$UR\gets T-sI$ (QR-factorization)}
+	\State{$T\gets RU+sI$}
+\EndFor{}
+%
+\end{algorithmic}
+\label{algQRSingleShiflExplicit}
+\line(1,0){120}
+\end{algo}
+%\end{algorithm} 
+%
+\end{columns}
+\end{frame} %}}}1
+
+\begin{frame}  %{{{1
+\frametitle{THE QR ALGORITHM WITH EXPLICIT SHIFTS}
+\begin{itemize}
+\item The shifted algorithm is known to converge cubically or better (ref: Wilkinson?).
+\item Example: The Wilkinson shift of the last block is used.
+\begin{tiny}
+\begin{align}
+&A = \smatrix{
+   4.0000  & 1.0000 &       0  &      0 \\
+   1.0000  & 3.0000 &  2.0000  &      0 \\
+        0  & 2.0000 &  2.0000  & \ts{3.0000} \\
+        0  &      0 &  \ts{3.0000}  & 1.0000 }
+,\,\notag\\
+&T_1 = \smatrix{
+   4.3180 & 0.8409 &      0 &      0\\
+   0.8409 & 4.0675 &-1.6172 &      0\\
+        0 &-1.6172 & 3.4988 &\ts{-0.4325}\\
+        0 &      0 &\ts{-0.4325} &-1.8842}
+,\,\notag\\
+&T_2 = \smatrix{
+   4.5362  & 0.8071  &      0 &       0\\
+   0.8071  & 4.6509  &-1.2878 &       0\\
+        0  &-1.2878  & 2.7347 &  \ts{0.0003}\\
+        0  &      0  & \ts{0.0003} & -1.9218}
+,\,\notag\\
+&T_3 = \smatrix{
+   4.7366 &  0.81226e  &      0  &      0\\
+   0.81226 &  4.8769  &-0.84826  &      0\\
+        0 & -0.84826  & 2.3083  &\ts{-6.1489e-14}\\
+        0 &       0  &\ts{-6.1489e-14}  &-1.9218}
+\end{align}
+\end{tiny}
+\item The eigenvalues of $A$ are $\{5.7424, 4.1477, 2.0317, \ts {-1.9218} \}$
+\end{itemize}
+\end{frame} %}}}1
+
+\begin{frame}  %{{{1
+\frametitle{THE QR ALGORITHM WITH EXPLICIT SHIFTS}
+\begin{itemize}
+	\item Error analysis:
+		\begin{enumerate}
+			\item Error of a single QR - transformation
+				(G\&L p.225):\\
+				\begin{quote}
+					The computed upper triangular matrix $\tilde R$ is the exact $R$ for a nearby $A$
+					in the sense that $Z^T(A+E)=\tilde R$ where $Z$ is some exact orthonormal matrix
+					and $\norm{E}_2\approx\ts u\norm{A}_2$.
+				\end{quote}
+			\item From Corollary 8.1.6 in G\&L: The error $\lambda_k(A+E)-\lambda_k(A)$ is
+				\begin{equation}
+					\lambda_k(A+E)-\lambda_k(A) \le \norm{E}_2 
+				\end{equation}
+		\end{enumerate}
+	\item Normally the eigenvalues are calculated with the same absolute accuracy, meaning that the 
+			smaller eigenvalues will have a larger relative error. (ref. art).
+	\item NB:
+		\begin{enumerate}
+			\item If the eigenvalues of the matrix is varying much, an QR-step with a large shift 
+				might degrade some of the smaller eigenvalues (ref art).
+		\end{enumerate}
+\end{itemize}
+\end{frame} %}}}1
+
+\begin{frame} % {{{1
+	\frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS}
+		\begin{theorem}[The Implicit Q-Theorem]
+			\begin{footnotesize}
+				Suppose $Q=(q_1,q_2,\dots,q_n)$ and $V=(v_1,v_2,\dots,v_n)$ are orthogonal matrices with the property
+				that both $Q^TAQ=T$ and $V^TAV=S$ are tridiagonal where $A\in\mathbb R^{n\times n}$ is symmetric.
+				Let $k$ denote the smallest index where $T_{k+1,k}=0$, with the convention that $k=n$ is $T$ is 
+				unreduced. If $v_1=q_1$ than $v_i=\pm q_i$ and $T_{i,i-1} = S_{i,i-1}$ for $i=2:k$. Moreover, if
+				$k<n$, then $S_{k+1,k}=0$.
+			\end{footnotesize}
+		\end{theorem}
+		\begin{itemize}
+				\item
+		Note that the shifted QR-step is an unitary operation:
+		\begin{equation}
+			\left.
+			\begin{matrix}
+				Q_kR\gets T_{k}-sI\\
+				T_{k+1}\gets RQ_k + sI
+			\end{matrix}
+			\right\} \text{ equivalent to }  T_{k+1} \gets Q_k^T (T_k - s I ) Q_k + sI =  Q_k^T T_k Q_k 
+		\end{equation}
+	\item Meaning that:
+		\begin{enumerate}
+			\item If we can find an $U$ s.t. $U^TTU$ is on tridiagonal form and $Ue_1=Q_ke_1$, then
+				$Q_k^TT_kQ_k = DU^TT_kUD$ where $U=\diag(\pm1,\pm1,\dots,\pm1)$.
+			\item The small offdiagonal elements in $Q_k^{T}TQ_k$ will be small in $U^{T}T_kU$ as well!
+			\item (??) No explicit shifts to can degrade the eigenvalues.
+		\end{enumerate}
+		\end{itemize}
+\end{frame} %}}}1
+
+\begin{frame} %{{{
+\frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS:} 
+	\begin{itemize}
+		\item
+		We want to form a matrix $U$ which is a product of givens transformations
+		\begin{align}
+			&U = U_{n-1}U_{n-2}\dots U_{1}, \notag\\ 
+			&U_i = 
+			\smatrix{ 
+				I^{i-1\times i-1} 	& 0 	& 0 \\ 
+				0 					& G_i 	& 0 \\ 
+				0 					& 0 	& I^{n-i-2\times n-i-2}}, \notag\\
+				&G_i = \smatrix{cos(\theta_i) & \sin(\theta_i) \\ -\sin(\theta_i) & \cos(\theta_i)}
+		\end{align}
+		where the first column of $U$ is equal to the first column of $Q_k$.
+		\item
+		note that $Ue_1 = U_1e_1 = \smatrix{cos(\theta_1)\\ -\sin(\theta_1) \\ 0 \\ 0 \\ \vdots}$
+	\end{itemize}
+\end{frame}%}}}1
+
+\begin{frame}  %{{{1
+\frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:}
+	\begin{itemize}
+		\item
+			To find a $U$ s.t. $Q_ke_1=Ue_1$ we must find a $\theta_1$ such that
+			\begin{equation}
+				G_1 
+				\smatrix{ T_{11}-s \\ T_{21} } \propto \smatrix{ 1 \\ 0} = 
+	%\smatrix{ \cos(\theta_1) & \sin(\theta_1) \\ -\sin(\theta_1) & \cos(\theta_1) } 
+	%\smatrix{ T_{11}-s \\ T_{21} } \propto \smatrix{ 1 \\ 0} \label{eq835}. 
+				\Rightarrow
+				G_1 \propto  \smatrix{T_{11}-s & -T_{21} \\ T_{21} & T_{11}-s}
+			\end{equation}
+		\item
+			Correct since
+			\begin{equation}
+				Q_kRe_1 = \smatrix{T_{11}-s\\T_{21}\\0\\0\\ \vdots} 
+				\Rightarrow Q_ke_1 \propto  \smatrix{T_{11}-s\\T_{21} \\0\\0\\ \vdots}
+			\end{equation}
+			because $R$ is upper triangular. Then
+		\item
+			Since both $Q_k$ and $U$ is orthogonal, the proportionalities implies that 
+			the first column of $Q_k$ and $U$ is equal.
+	\end{itemize}
+\end{frame}%}}}1
+
+\begin{frame}  %{{{1
+\frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:}
+\begin{itemize}
+	\item
+	The next step is to show how $G_i,\,i>1$ can be constructed such that $U^TTU$ is tridiagonal.
+	First, look at this example where $T$ is an $5\times 5$ matrix.
+	\begin{equation}
+		\begin{footnotesize}
+		T'=U_1 ^T T U_1= 
+		\smatrix
+		{
+			\times 	& \times & + & 0 & 0   \\
+			\times 	& \times & \times & 0 & 0   \\
+			+   	& \times & \times & \times & 0   \\
+			0 & 0 & \times & \times & \times     \\
+			0 & 0 & 0 & \times & \times    \\
+		}
+		,\,
+		T''=U_2^T T' U_2 = 
+		\smatrix
+		{
+			\times 	& \times & 0 & 0 & 0   \\
+			\times 	& \times & \times & + & 0   \\
+			0 	& \times & \times & \times & 0    \\
+			0 & + & \times & \times & \times   \\
+			0 & 0 & 0 & \times & \times  \\
+		}
+		\end{footnotesize}
+	\end{equation}
+		%,\notag\\
+	\begin{equation}
+		\begin{footnotesize}
+		U'''=U_3^T T'' U_3 = 
+		\smatrix
+		{
+			\times 	& \times & 0 & 0 & 0   \\
+			\times 	& \times & \times & 0 & 0   \\
+			0 	& \times & \times & \times & +\\
+			0 & 0 & \times & \times & \times   \\
+			0 & 0 & + & \times & \times  \\
+		}
+		,\,
+		T''''=U_4^{T}T'''U_4= 
+		\smatrix
+		{
+			\times 	& \times & 0 & 0 & 0   \\
+			\times 	& \times & \times & 0 & 0   \\
+			0 	& \times & \times & \times & 0    \\
+			0 & 0 & \times & \times & \times   \\
+			0 & 0 & 0 & \times & \times  \\
+		}
+		.
+		\end{footnotesize}
+	\end{equation}
+\item Now we have shown how one can 
+\end{itemize}
+\end{frame}%}}}1
+
+\begin{frame} \frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} %{{{1
+The $G_i$'s can be found by solving the following equation
+\begin{align}
+\smatrix{
+1 & 0 & 0 & 0 \\
+0 & c & s & 0 \\
+0 & -s & c & 0 \\
+0 & 0 & 0 & 1 
+}
+\smatrix{
+a_i& b_i & z_i & 0 \\
+b_i & a_p & b_p & 0 \\
+z_i & b_p & a_q & b_p \\
+0 & 0 & b_q & a_r 
+}
+\smatrix{
+1 & 0 & 0 & 0 \\
+0 & c & s & 0 \\
+0 & -s & c & 0 \\
+0 & 0 & 0 & 1 
+}
+=
+\smatrix{
+a_i& b_i & 0 & 0 \\
+b_i & a_p & b_p & z_p \\
+0 & b_p & a_q & b_p \\
+0 & z_p & b_q & a_r 
+}
+\end{align}
+where $(p,q,r)=(i+1, i+2, i+3)$. We simply need to find a $b_is+z_ic = 0$
+and then to explicitly do the transform. (involves approx. 26 flops).
+%$G_i$ can be written 
+%\begin{align}
+%	G_i = \frac1{N}\smatrix{ 1 & \frac{z_i}{b_i} \\ -\frac{z_i}{b_i} & 1 }
+%	\text{ where } N = \left[\frac{z_i}{b_i}\right]^2+1.
+%\end{align}
+\end{frame}%}}}1
+
+\begin{frame} \frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} %{{{1
+\begin{algo}[Symmetric QR Algorithm]
+\begin{footnotesize}
+\textbf{Input: }
+{
+%
+The symmetric matrix $T\in\mathbb R^{n\times n}$, 
+%
+}
+\textbf{Output: }
+{
+%
+$T$ as the Shur decomposition.
+%
+}\\
+\line(1,0){120}
+\begin{algorithmic}
+%
+\State{Compute the tridiagonalization $T\gets A$:}
+	\State{\hspace{4mm} $T=(P_1\dots P_n-2)^TA(P_1\dots P_n-2)$}
+	\State{\hspace{4mm} Set $D=T$ and form $Q=P_1\dots P_n$ if $Q$ is desired.}
+\While{$q<n$}
+	\For{$i=1:n-1$}
+		\If{$|d_{i+1,i}|$ and $|d_{i,i+1}|$ $\le\text{tol}(|d_{ii}|+|d_{i+1,i+1}|)$}
+			\State{$d_{i,i+1}\gets0$}
+			\State{$d_{i+1,i}\gets0$}
+		\EndIf{}
+	\EndFor{}
+	\State{Find the largest $q$ and the smallest $p$ such that if
+		\begin{equation}
+		D = 
+		\begin{matrix}
+			\\
+			\smatrix{D_{11} & 0 & 0 \\ 0 & D_{22} & 0 \\ 0 & 0 & D_{33}} 
+			& 
+			\begin{matrix}
+				p \\ n-p-q \\ q
+			\end{matrix}
+			\\
+			\begin{matrix}
+				p & n-p-q & q
+			\end{matrix}
+		\end{matrix},
+		\end{equation}
+		}
+		\State{then $D_{33}$ is diagonal and $D_{22}$ is unreduced.}
+	\If{$q<n$}
+		\State{Apply a single implicitly shifted QR-Step to $D_{22}:$}
+		\State{\hspace{4mm}$D=\text{diag}(I_p,\overline Z, I_q)^T D\text{diag}(I_p,\overline Z, I_q) $}
+		\State{If $Q$ is desired, then let $Q=Q\text{diag}(I_p,\overline Z, I_q)  $}
+	\EndIf{}
+\EndWhile{}
+%
+\end{algorithmic}
+\label{algQRAlgorithm}
+\line(1,0){120}
+\end{footnotesize}
+\end{algo}
+\end{frame}%}}}1
+
+\begin{frame} \frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} %{{{1
+\begin{itemize}
+	\item deflation = speedup
+	\item $D_k$ on reduced tridiagonal form = speedup.
+\end{itemize}
+\end{frame}%}}}1
+
+\begin{frame}
+\frametitle{CONVERGENCE AND ERROR}
+%Convergence facts ... pros, cons, ... 
+\begin{columns}
+%
+\column{6cm}
+\begin{figure}%{{{3
+\begin{center}
+\includegraphics[height=3.8cm]{12x12randn_eigv_conv_QRstandard.png}
+	\begin{scriptsize}
+	\begin{tabular}{ll}
+		\hline
+		\hline
+		\\
+		$\lambda_1=
+		-6.544395991691173
+		$ & $\lambda_2=
+		6.583845448270952
+		$ \\ $\lambda_3=
+		-4.759692498020273
+		$ & $\lambda_4=
+		4.227228411195598
+		$ \\ $\lambda_5=
+		-3.718806489258647
+		$ & $\lambda_6=
+		3.406092305333206
+		$ \\ $\lambda_7=
+		-2.508608861858869
+		$ & $\lambda_8=
+		2.480820818364306
+		$ \\ $\lambda_9=
+		-1.768319271480477
+		$ & $\lambda_{10}=
+		0.731101702075869
+		$ \\ $\lambda_{11}=
+		-0.4860591502185416
+		$ & $\lambda_{12}=
+		0.4459711429826421
+		$ \\
+		\\
+		\hline
+		\hline
+	\end{tabular}
+	\end{scriptsize}
+\caption{
+	The basic QR- algorithm without shifts. The convergence of the leading principal submatrix
+	of dimension $k$ is $\propto |(\lambda_k/\lambda_{k+1})|^i$
+}
+\end{center}
+\end{figure}
+%
+%
+%
+\column{6cm}
+%
+\begin{figure}
+\begin{center}
+\includegraphics[height=3.8cm]{12x12randn_eigv_conv_QRfull.png}
+	\begin{scriptsize}
+	\begin{tabular}{ll}
+		\hline
+		\hline
+		\\
+		$\lambda_1=
+		-6.544395991691173
+		$ & $\lambda_2=
+		6.583845448270952
+		$ \\ $\lambda_3=
+		-4.759692498020273
+		$ & $\lambda_4=
+		-3.718806489258647
+		$ \\ $\lambda_5=
+		2.480820818364306
+		$ & $\lambda_6=
+		4.227228411195598
+		$ \\ $\lambda_7=
+		3.406092305333206
+		$ & $\lambda_8=
+		-2.508608861858869
+		$ \\ $\lambda_9=
+		-1.768319271480477
+		$ & $\lambda_{10}=
+		-0.4860591502185416
+		$ \\ $\lambda_{11}=
+		0.731101702075869
+		$ & $\lambda_{12}=
+		0.4459711429826421
+		$ \\
+		\\
+		\hline
+		\hline
+	\end{tabular}
+	\end{scriptsize}
+\caption{
+	The full implicit QR- algorithm with Wilkinson shifts and deflation. Quadratic convergence
+	of the shifted eigenvalue. 
+}
+\end{center}
+\end{figure}
+%
+%
+%
+\end{columns}
+\end{frame}
+
+\begin{frame} \frametitle{OVERVIEW:}
+Comparison: bisect., jackobi.. How to calc eigenvec.
+\end{frame}
+
+\begin{frame}
+\frametitle{LAPACK: dsyev}
+\begin{center}
+	5X speedup
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{LAPACK: *SYE* functions}%{{{1
+\begin{columns}[l]
+\column{9cm}
+\begin{enumerate}
+\begin{footnotesize}
+\item
+xSTEQR
+    This routine uses the \textbf{implicitly shifted QR algorithm}. It switches between the QR and QL variants in order to handle graded matrices more effectively than the simple QL variant.
+\item
+xSTERF
+    This routine uses a \textbf{square-root free version of the QR algorithm}, also switching between QR and QL variants, and can only compute all the eigenvalues. 
+\item
+xSTEDC
+    This routine uses \textbf{Cuppen's divide and conquer algorithm} to find the eigenvalues and the eigenvectors (if only eigenvalues are desired, xSTEDC calls xSTERF). xSTEDC can be many times faster than xSTEQR for large matrices but needs more work space (2n2 or 3n2). 
+\item
+xSTEGR
+    This routine uses the \textbf{relatively robust representation (RRR) algorithm} to find eigenvalues and eigenvectors. This routine uses an LDLT factorization of a number of translates T - sI of T, for one shift s near each cluster of eigenvalues. For each translate the algorithm computes very accurate eigenpairs for the tiny eigenvalues. xSTEGR is faster than all the other routines except in a few cases, and uses the least workspace.
+\item
+xPTEQR
+    This routine applies to symmetric positive definite tridiagonal matrices only. \textbf{It uses a combination of Cholesky factorization and bidiagonal QR iteration} (see xBDSQR) and may be significantly more accurate than the other routines except xSTEGR. 
+\item
+xSTEBZ
+    This routine uses \textbf{bisection} to compute some or all of the eigenvalues. Options provide for computing all the eigenvalues in a real interval or all the eigenvalues from the ith to the jth largest. It can be highly accurate, but may be adjusted to run faster if lower accuracy is acceptable. 
+\item
+xSTEIN
+    Given accurate eigenvalues, this routine uses \textbf{inverse iteration} to compute some or all of the eigenvectors.
+\end{footnotesize}
+\end{enumerate}
+
+%
+\column{2.8cm}
+%
+\begin{figure}%
+\begin{center}
+\includegraphics[height=6.5cm]{callg_dsyev.png} 
+%\caption{Callgraph xSYEIGV.}
+\end{center}
+\end{figure}
+%
+\end{columns}
+\end{frame}%}}}1
+
+\begin{frame} \frametitle{THE SVD ALGO:}
+\end{frame}
+
+
+%\begin{frame}
+%\frametitle{ILLUSTRATIVE EXAMPLE: HOW CAN THESE IDEAS BE USED TO IMPLEMENT THE SVD ALGO EFFICIENTLY}
+%\begin{itemize}
+%	\item Plots
+%	\item Convergence facts ... pros, cons, ... 
+%\end{itemize}
+%\end{frame}
+
+%-The QR algorithm can be seen as a sophisticated version of the Power Iteration algorithm. Therefore, this algo will be presented first.
+%-Shifts are introduced to deflate the tridiagonal matrix $T$. Normally, a few iterations is sufficient to deflate the matrix one order (fron nxn to n-1xn-1).
+%	The excplicit approach is introduced first, and then the implicit using the implicit Q theorem.
+%-Error bounds are discussed. Important is that the QR algorithm is backwards stable, meaning that the matrix $\tilde A$ ($T = \tilde Q^T\tilde A \tilde Q$) 
+%	is orthogonally similar to $A + E$ where $E$ has a tiny norm, meaning that the eigenvals are good. FW stab and eigenvecs.. 
+%-Efficiency is discussed. More efficient methods exists for if only a few of the eigenvectors or eigen values are needed.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% APPENDIX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\begin{frame}[label=householders explained] \frametitle{Householders reflections explained}
+\begin{itemize}
+\item A Householder reflection is a rank 1 matrix on the form $H_1 = I - 2\frac{uu^T}{u^Tu}$.
+\item To find a Householder matrix such that $H_1 x \propto e_1$ we choose $u = x \pm \norm{x}_2 e_1$.
+Then $H_1 x = \pm \norm{x}_2 e_1$.
+\item If the $n\times n$ matrix $A$ can be written on the form \[ A = \smatrix{a_{11} & x^T \\ x & A(2:n,2:n)} \] 
+and \[H = \smatrix{1 & 0 \\ 0 & H_1} \] then
+\[ HAH = \smatrix{a_{11} & \pm \norm{x}_2 e_1^T \\ \pm \norm{x}_2 e_1 &  H_1A(2:n,2:n)H_1 }\]
+\item The rest of the matrix can be systematically reduced to tridiagonal form by constructiong the $n-2\times n-2$ matrix $H_2$
+to remove the sub sub diagonal elements of the second column in the same manner, and so on.
+\item Hermitian matrices can be reduced to tridiagonal real and symmetric form (or real bidiagonal form ($H_aAH_b$)). General matrices can be brought to Hessenberg form.
+\end{itemize}
+\hyperlink{tridiagonalizationofa}{\beamergotobutton{return}}
+\end{frame}
+	
+
+\begin{frame}[label=dist span] \frametitle{Distance between two subspaces}
+\begin{itemize}
+\item Assume $A = [a_1, a_2, \dots, a_m],\, B = [b_1, b_2, \dots, b_m]$ are orthogonal matrices.
+\item Then
+	\[ \text{dist}(\text{span}(a_1,\dots,a_m), \text{span}(b_1,\dots,b_m)
+		= \norm{A-B}_2
+	\]
+which is the modulus of the eigenvalue of the matrix $A-B$ with the largest modulus.
+\item 
+	When the overlap between the subspaces increase, 
+	$\text{dist}(\text{span}(b_1,\dots,b_m), \text{span}(b_1,\dots,b_m)$
+	will decrease.
+\end{itemize}
+\begin{tiny}
+Example:
+$A = a_1a_1^T + a_2a_2^T\in\mathbb R^2$, $B = b_1b_1^T + b_2b_2^T \in\mathbb R^2$. $A_H = a_1a_1^T + a_2a_2^T + a_3a_3^T 
+\in\mathbb R^3$, $A_H^TA_H=I$.
+\begin{align}
+	\norm{A-B}_2 
+	&= \norm{A-A_H^TA_HBA_H^TA_H}_2 \\
+	&= \lVert a_1a_1^T ( 1 - a_1^Tb_1b_1^Ta_1 - a_1^Tb_1b_1^Ta_1 )\notag\\
+	&+ 	a_2a_2^T ( 1 - a_2^Tb_1b_1^Ta_2 - a_2^Tb_2b_2^Ta_2 )\notag\\
+	&+ 	a_3a_3^T(- a_3^Tb_1b_1^Ta_3 - a_3^Tb_1b_1^Ta_3) \rVert_2
+\end{align}
+Note that $a_i^Tb_jb_j^Ta_i\in[0,1]$.
+The distance is is $\text{max}
+	( |1 - a_1^Tb_1b_1^Ta_1 - a_1^Tb_1b_1^Ta_1 |,
+	 |1 - a_2^Tb_1b_1^Ta_2 - a_2^Tb_2b_2^Ta_2 |,
+	 |- a_3^Tb_1b_1^Ta_3 - a_3^Tb_1b_1^Ta_3|).$
+Which is $0$ only in the case that $A=B$.\\
+\end{tiny}
+\hyperlink{framelb1}{\beamergotobutton{return}}
+\end{frame}
+\end{document}
+% vim:foldmethod=marker
