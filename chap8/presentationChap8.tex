@@ -13,7 +13,6 @@
 \usepackage{algpseudocode}
 \usepackage{subfigure}
 
-
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows}
 
@@ -68,9 +67,13 @@
 
 
 %\usetheme[secheader]{Berlin}
-\usetheme[secheader]{Berkeley}
-\usecolortheme{seahorse}%}}}1
-
+%\usetheme[secheader]{umbc1}
+%\usetheme[secheader]{Szeged}
+%\usetheme[secheader]{Montpellier}
+%\usetheme[secheader]{Berkeley}
+\usecolortheme{rose}
+%\usefonttheme{structuresmallcapsserif}
+\usefonttheme{structurebold}
 \begin{document}
 
 %\title{Title}
@@ -350,15 +353,13 @@ Reduction to symmetric tridiagonal form:
 \begin{equation}
 H^\dagger AH = T,\, 
 T=
-	\left(
-	\begin{matrix}
+	\smatrix{
 		a_1 & b_1 & & & 0\\
 		b_1 & a_2 & b_2 & & \\
 		& b_2 & a_3 & \ddots & \\
 		& & \ddots	& \ddots & b_{n-1} \\
 		0& & & b_{n-1}& a_n 
-	\end{matrix}
-	\right),
+	}
 	\, a_i, b_i \in \mathbb R.
 \end{equation}
 	\item
@@ -1013,7 +1014,7 @@ xSTEIN
 		\end{theorem}
 \end{frame}%}}}
 
-\begin{frame}
+\begin{frame}%{{{
 \frametitle{THE SVD ALGO:}
 \begin{itemize}
 	\item The following procedure will produce a SVD-factorization of $A$. 
@@ -1032,26 +1033,148 @@ xSTEIN
 	\item Problem: unwise to multiply $A,\,A^\dagger$ since small elements  
 		$A_{ij}<\sqrt{\ts u}$ will disappear due to round off error.
 \end{itemize}
-\end{frame}
+\end{frame}%}}}
 
+\begin{frame}%{{{
+	\frametitle{THE SVD ALGO}
+	\begin{itemize}
+		\item Multiplication $A^\dagger A$ be ommitted:
+			\begin{enumerate}
+				\item Reduce $A$ to real bidiagonal form via a Householders reduction s.t. 
+					\begin{align}
+						U_B^T A V_B ,\, B= \smatrix{B\\0} = 
+						\smatrix{
+							d_1 & t_1 & & & 0\\
+							0 & d_2 & t_2 & & \\
+							& 0 & d_3 & \ddots & \\
+							& & \ddots	& \ddots & t_{n-1} \\
+							0& & & 0& d_n 
+						}
+					\end{align}
+					This is a $\mathcal O(n^3)$ operation.
+				\item The matrix $B^TB$ is real and tridiagonal and can be unitarily transformed to a diagonal matrix 
+						$\diag (\sigma_1^2, \sigma_2^2,\dots, \sigma_n^2)$ using the symmetric $QR$ algorithm.
+			\end{enumerate}
+	\end{itemize}
+\end{frame}%}}}
 
-%\begin{frame}
-%\frametitle{ILLUSTRATIVE EXAMPLE: HOW CAN THESE IDEAS BE USED TO IMPLEMENT THE SVD ALGO EFFICIENTLY}
-%\begin{itemize}
-%	\item Plots
-%	\item Convergence facts ... pros, cons, ... 
-%\end{itemize}
-%\end{frame}
+\begin{frame}%{{{
+\frametitle{THE SVD ALGO}
+\begin{itemize}
+	\item In the implicit QR-algorithm we would:
+		\begin{enumerate}
+			\item
+				do a implicit QR-step with the Wilkinson shift of the last block of $B^TB$
+				\begin{align}
+					[B^TB](n-1:n,n-1:n) = \smatrix{d^2_{n-1}+f^2_{n-2} & d_{n-1}f_{n-1} \\ d_{n-1}f_{n-1} & d^2_n+f^2_{n-1}}
+				\end{align}
+				(The eigenvalue that is closest to $d^2_n+f^2_{n-1}$), 
+			\item and compute the first givens rotation $V_1=\smatrix{G_1 & 0 \\ 0 & I}$ with the restraint that $Ve_1=Qe_1$. 
+		\end{enumerate}
+\end{itemize}
+\end{frame}%}}}
 
-%-The QR algorithm can be seen as a sophisticated version of the Power Iteration algorithm. Therefore, this algo will be presented first.
-%-Shifts are introduced to deflate the tridiagonal matrix $T$. Normally, a few iterations is sufficient to deflate the matrix one order (fron nxn to n-1xn-1).
-%	The excplicit approach is introduced first, and then the implicit using the implicit Q theorem.
-%-Error bounds are discussed. Important is that the QR algorithm is backwards stable, meaning that the matrix $\tilde A$ ($T = \tilde Q^T\tilde A \tilde Q$) 
-%	is orthogonally similar to $A + E$ where $E$ has a tiny norm, meaning that the eigenvals are good. FW stab and eigenvecs.. 
-%-Efficiency is discussed. More efficient methods exists for if only a few of the eigenvectors or eigen values are needed.
+\begin{frame}%{{{
+	\frametitle{THE SVD ALGO}
+	\begin{itemize}
+		\item The multiplication $B^TB$ can also be ommited, using a strategy similar to that of the implicit QR-algorithm.
+			\begin{enumerate}
+				\item $5\times 5$ example:
+					\begin{equation}
+						\begin{footnotesize}
+							T'= T V_1= 
+							\smatrix
+							{
+								\times 	& \times & 0 & 0 & 0   \\
+								+ 	& \times & \times & 0 & 0   \\
+								0 & 0 & \times & \times & 0   \\
+								0 & 0 & 0 & \times & \times     \\
+								0 & 0 & 0 & 0 & \times    \\
+							}
+							,\,
+							T''=  U_1^T T'  = 
+							\smatrix
+							{
+								\times 	& \times & + & 0 & 0   \\
+								0	& \times & \times & 0 & 0   \\
+								0 	& 0 & \times & \times & 0    \\
+								0 & 0 & 0 & \times & \times   \\
+								0 & 0 & 0 & 0 & \times  \\
+							}
+						\end{footnotesize}
+					\end{equation}
+		%,\notag\\
+					\begin{equation}
+						\begin{footnotesize}
+							U'''= T'' V_2 = 
+							\smatrix
+							{
+								\times 	& \times & 0 & 0 & 0   \\
+								0 	& \times & \times & 0 & 0   \\
+								0 	& + & \times & \times & 0\\
+								0 & 0 & 0 & \times & \times   \\
+								0 & 0 & 0 & 0 & \times  \\
+							}
+							,\,
+							T''''= U_2^TT'''= 
+							\smatrix
+							{
+								\times 	& \times & 0 & 0 & 0   \\
+								0 	& \times & \times & + & 0   \\
+								0 	& 0 & \times & \times & 0    \\
+								0 & 0 & 0 & \times & \times   \\
+								0 & 0 & 0 & 0 & \times  \\
+							}
+						\end{footnotesize}
+					\end{equation}
+					and so on... 
+				\item After $2n-2$ iterations the matrix will be back on bidiagonal form.
+				\item Since $(U^T B V)U^T B V = V^T(B^TB)V = \tilde B^T\tilde B$ is tridiagonal, 
+					it follows from the implicit-Q theorem that $V$ is essentially the same matrix that we would use
+					the QR-iteration step.
+			\end{enumerate}
+	\item $B$ will converge to diagonal form with the singular values on the diagonal ($\pm$?).
+	\end{itemize}
+\end{frame}%}}}
 
+\begin{frame}%{{{
+\frametitle{THE SVD ALGO}
+\begin{itemize}
+	\item The implicit Q-theorem only holds if the tridiagonal matrix is unreduced. 
+	\item This corresponds to 
+		\begin{enumerate}
+			\item
+				If one of diagonal element $f_k=0$ the problem decouples into two smaller:
+				\begin{align}
+					B = 
+					\begin{matrix}
+						\smatrix{B_1 & 0 \\ 0 & B_2}
+					\end{matrix}
+				\end{align}
+			\item If one of the diagonal elements $d_k=0$ i .. p454.. %TODO
+				\begin{align}
+					\smatrix
+					{
+						\times 	& \times & 0 & 0 & 0   \\
+						0 	& \times & \times & 0 & 0   \\
+						0 	& 0 & 0 & 0 & 0    \\
+						0 & 0 & 0 & \times & \times   \\
+						0 & 0 & 0 & 0 & \times  \\
+					}
+				\end{align}
+				\item Both situations corresponds to $B^TB=\smatrix{T_1&0 \\ 0&T_2}$.
+		\end{enumerate}
+\end{itemize}
+\end{frame}%}}}
 
+\begin{frame}%{{{
+	\frametitle{THE SVD ALGO}
+	\begin{itemize}
+		\item  . %TODO
+	\end{itemize}
+\end{frame}%}}}
 
+		%The Golub-Kahan step 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% APPENDIX
@@ -1059,54 +1182,53 @@ xSTEIN
 
 
 
-
 \begin{frame}[label=householders explained] \frametitle{Householders reflections explained}%{{{
-\begin{itemize}
-\item A Householder reflection is a rank 1 matrix on the form $H_1 = I - 2\frac{uu^T}{u^Tu}$.
-\item To find a Householder matrix such that $H_1 x \propto e_1$ we choose $u = x \pm \norm{x}_2 e_1$.
-Then $H_1 x = \pm \norm{x}_2 e_1$.
-\item If the $n\times n$ matrix $A$ can be written on the form \[ A = \smatrix{a_{11} & x^T \\ x & A(2:n,2:n)} \] 
-and \[H = \smatrix{1 & 0 \\ 0 & H_1} \] then
-\[ HAH = \smatrix{a_{11} & \pm \norm{x}_2 e_1^T \\ \pm \norm{x}_2 e_1 &  H_1A(2:n,2:n)H_1 }\]
-\item The rest of the matrix can be systematically reduced to tridiagonal form by constructiong the $n-2\times n-2$ matrix $H_2$
-to remove the sub sub diagonal elements of the second column in the same manner, and so on.
-\item Hermitian matrices can be reduced to tridiagonal real and symmetric form (or real bidiagonal form ($H_aAH_b$)). General matrices can be brought to Hessenberg form.
-\end{itemize}
-\hyperlink{tridiagonalizationofa}{\beamergotobutton{return}}
-\end{frame}%}}}
+		\begin{itemize}
+			\item A Householder reflection is a rank 1 matrix on the form $H_1 = I - 2\frac{uu^T}{u^Tu}$.
+			\item To find a Householder matrix such that $H_1 x \propto e_1$ we choose $u = x \pm \norm{x}_2 e_1$.
+				Then $H_1 x = \pm \norm{x}_2 e_1$.
+			\item If the $n\times n$ matrix $A$ can be written on the form \[ A = \smatrix{a_{11} & x^T \\ x & A(2:n,2:n)} \] 
+				and \[H = \smatrix{1 & 0 \\ 0 & H_1} \] then
+				\[ HAH = \smatrix{a_{11} & \pm \norm{x}_2 e_1^T \\ \pm \norm{x}_2 e_1 &  H_1A(2:n,2:n)H_1 }\]
+			\item The rest of the matrix can be systematically reduced to tridiagonal form by constructiong the $n-2\times n-2$ matrix $H_2$
+				to remove the sub sub diagonal elements of the second column in the same manner, and so on.
+			\item Hermitian matrices can be reduced to tridiagonal real and symmetric form (or real bidiagonal form ($H_aAH_b$)). General matrices can be brought to Hessenberg form.
+		\end{itemize}
+		\hyperlink{tridiagonalizationofa}{\beamergotobutton{return}}
+	\end{frame}%}}}
 
 \begin{frame}[label=dist span] \frametitle{Distance between two subspaces}%{{{
 \begin{itemize}
-\item Assume $A = [a_1, a_2, \dots, a_m],\, B = [b_1, b_2, \dots, b_m]$ are orthogonal matrices.
-\item Then
-	\[ \text{dist}(\text{span}(a_1,\dots,a_m), \text{span}(b_1,\dots,b_m)
-		= \norm{A-B}_2
-	\]
-which is the modulus of the eigenvalue of the matrix $A-B$ with the largest modulus.
-\item 
-	When the overlap between the subspaces increase, 
-	$\text{dist}(\text{span}(b_1,\dots,b_m), \text{span}(b_1,\dots,b_m)$
-	will decrease.
-\end{itemize}
-\begin{tiny}
-Example:
-$A = a_1a_1^T + a_2a_2^T\in\mathbb R^2$, $B = b_1b_1^T + b_2b_2^T \in\mathbb R^2$. $A_H = a_1a_1^T + a_2a_2^T + a_3a_3^T 
-\in\mathbb R^3$, $A_H^TA_H=I$.
-\begin{align}
-	\norm{A-B}_2 
-	&= \norm{A-A_H^TA_HBA_H^TA_H}_2 \\
-	&= \lVert a_1a_1^T ( 1 - a_1^Tb_1b_1^Ta_1 - a_1^Tb_1b_1^Ta_1 )\notag\\
-	&+ 	a_2a_2^T ( 1 - a_2^Tb_1b_1^Ta_2 - a_2^Tb_2b_2^Ta_2 )\notag\\
-	&+ 	a_3a_3^T(- a_3^Tb_1b_1^Ta_3 - a_3^Tb_1b_1^Ta_3) \rVert_2
-\end{align}
-Note that $a_i^Tb_jb_j^Ta_i\in[0,1]$.
-The distance is is $\text{max}
-	( |1 - a_1^Tb_1b_1^Ta_1 - a_1^Tb_1b_1^Ta_1 |,
-	 |1 - a_2^Tb_1b_1^Ta_2 - a_2^Tb_2b_2^Ta_2 |,
-	 |- a_3^Tb_1b_1^Ta_3 - a_3^Tb_1b_1^Ta_3|).$
-Which is $0$ only in the case that $A=B$.\\
-\end{tiny}
-\hyperlink{framelb1}{\beamergotobutton{return}}
+	\item Assume $A = [a_1, a_2, \dots, a_m],\, B = [b_1, b_2, \dots, b_m]$ are orthogonal matrices.
+	\item Then
+		\[ \text{dist}(\text{span}(a_1,\dots,a_m), \text{span}(b_1,\dots,b_m)
+			= \norm{A-B}_2
+			\]
+			which is the modulus of the eigenvalue of the matrix $A-B$ with the largest modulus.
+		\item 
+			When the overlap between the subspaces increase, 
+			$\text{dist}(\text{span}(b_1,\dots,b_m), \text{span}(b_1,\dots,b_m)$
+			will decrease.
+	\end{itemize}
+	\begin{tiny}
+		Example:
+		$A = a_1a_1^T + a_2a_2^T\in\mathbb R^2$, $B = b_1b_1^T + b_2b_2^T \in\mathbb R^2$. $A_H = a_1a_1^T + a_2a_2^T + a_3a_3^T 
+		\in\mathbb R^3$, $A_H^TA_H=I$.
+		\begin{align}
+			\norm{A-B}_2 
+			&= \norm{A-A_H^TA_HBA_H^TA_H}_2 \\
+			&= \lVert a_1a_1^T ( 1 - a_1^Tb_1b_1^Ta_1 - a_1^Tb_1b_1^Ta_1 )\notag\\
+			&+ 	a_2a_2^T ( 1 - a_2^Tb_1b_1^Ta_2 - a_2^Tb_2b_2^Ta_2 )\notag\\
+			&+ 	a_3a_3^T(- a_3^Tb_1b_1^Ta_3 - a_3^Tb_1b_1^Ta_3) \rVert_2
+		\end{align}
+		Note that $a_i^Tb_jb_j^Ta_i\in[0,1]$.
+		The distance is is $\text{max}
+		( |1 - a_1^Tb_1b_1^Ta_1 - a_1^Tb_1b_1^Ta_1 |,
+		|1 - a_2^Tb_1b_1^Ta_2 - a_2^Tb_2b_2^Ta_2 |,
+		|- a_3^Tb_1b_1^Ta_3 - a_3^Tb_1b_1^Ta_3|).$
+		Which is $0$ only in the case that $A=B$.\\
+	\end{tiny}
+	\hyperlink{framelb1}{\beamergotobutton{return}}
 \end{frame}%}}}
 \end{document}
 % vim:foldmethod=marker
