@@ -86,7 +86,8 @@
 \frametitle{INTRODUCTION:}
 \begin{itemize}
 \item The QR - algorithm: From the basic ideas to the optimized implementation.
-\item The SVD algorithm: 
+\item The QR - algorithm compared to other algorithms.
+\item The SVD - algorithm. 
 \end{itemize}
 \end{frame} %}}}1 
 
@@ -646,44 +647,45 @@ T=
 \end{frame}%}}}1
 
 \begin{frame} \frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} %{{{1
-The $G_i$'s can be found by solving the following equation
-\begin{align}
-\smatrix{
-1 & 0 & 0 & 0 \\
-0 & c & s & 0 \\
-0 & -s & c & 0 \\
-0 & 0 & 0 & 1 
-}
-\smatrix{
-a_i& b_i & z_i & 0 \\
-b_i & a_p & b_p & 0 \\
-z_i & b_p & a_q & b_p \\
-0 & 0 & b_q & a_r 
-}
-\smatrix{
-1 & 0 & 0 & 0 \\
-0 & c & s & 0 \\
-0 & -s & c & 0 \\
-0 & 0 & 0 & 1 
-}
-=
-\smatrix{
-\tilde a_i& \tilde b_i & 0 & 0 \\
-\tilde b_i &\tilde a_p &\tilde b_p &\tilde z_p \\
-0 &\tilde b_p &\tilde a_q &\tilde b_p \\
-0 &\tilde z_p &\tilde b_q &\tilde a_r 
-}
-\end{align}
-where $(p,q,r)=(i+1, i+2, i+3)$. We simply need to find a $b_is+z_ic = 0$
-and then to explicitly do the transform. (involves approx. 26 flops).
+		The $G_i$'s can be found by solving the following equation
+		\begin{align}
+			\smatrix{
+				1 & 0 & 0 & 0 \\
+				0 & c & s & 0 \\
+				0 & -s & c & 0 \\
+				0 & 0 & 0 & 1 
+			}
+			\smatrix{
+				a_i& b_i & z_i & 0 \\
+				b_i & a_p & b_p & 0 \\
+				z_i & b_p & a_q & b_p \\
+				0 & 0 & b_q & a_r 
+			}
+			\smatrix{
+				1 & 0 & 0 & 0 \\
+				0 & c & s & 0 \\
+				0 & -s & c & 0 \\
+				0 & 0 & 0 & 1 
+			}
+			=
+			\smatrix{
+				\tilde a_i& \tilde b_i & 0 & 0 \\
+				\tilde b_i &\tilde a_p &\tilde b_p &\tilde z_p \\
+				0 &\tilde b_p &\tilde a_q &\tilde b_p \\
+				0 &\tilde z_p &\tilde b_q &\tilde a_r 
+			}
+		\end{align}
+		where $(p,q,r)=(i+1, i+2, i+3)$. We simply need to find a $b_is+z_ic = 0$
+		and then to explicitly do the transform. (involves approx. 26 flops).
 %$G_i$ can be written 
 %\begin{align}
 %	G_i = \frac1{N}\smatrix{ 1 & \frac{z_i}{b_i} \\ -\frac{z_i}{b_i} & 1 }
 %	\text{ where } N = \left[\frac{z_i}{b_i}\right]^2+1.
 %\end{align}
-\end{frame}%}}}1
+	\end{frame}%}}}1
 
-\begin{frame} \frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} %{{{1
+\begin{frame} %{{{
+\frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS:}
 \begin{algo}[Symmetric QR Algorithm]
 \begin{footnotesize}
 \textbf{Input: }
@@ -743,7 +745,8 @@ $T$ as the Shur decomposition.
 \end{algo}
 \end{frame}%}}}1
 
-\begin{frame} \frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} %{{{1
+\begin{frame} %{{{
+\frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} 
 \begin{itemize}
 	\item deflation = speedup. Ex: $\approx 26 \times 3$ flops $+$ formation of $G_1$.
 		\begin{align}
@@ -873,7 +876,8 @@ $T$ as the Shur decomposition.
 \end{columns}
 \end{frame}%}}}1
 
-\begin{frame} \frametitle{OVERVIEW:}%{{{1		
+\begin{frame} %{{{
+\frametitle{OVERVIEW:}
 		\begin{itemize}
 			\item Tridiagonalization algorithms:
 				\begin{table}
@@ -929,8 +933,8 @@ $T$ as the Shur decomposition.
 		\end{itemize}
 \end{frame}%}}}
 
-\begin{frame}
-	\frametitle{CONCLUDING REMARKS}
+\begin{frame}%{{{
+\frametitle{CONCLUDING REMARKS}
 	\begin{itemize}
 		\item If only a few of the eigenvectors are required, then it is cheaper not to accumulate the similarity 
 			transformations and use inverse iterations to find the eigenvectors. 
@@ -938,10 +942,11 @@ $T$ as the Shur decomposition.
 		\item The paralell algorithms (Divide-and-conquer) outperforms the other algorithms when many cores are 
 			aviable.
 	\end{itemize}
-\end{frame}
+\end{frame}%}}}
 
-\begin{frame}
-\frametitle{LAPACK: *SYE* functions}%{{{1
+\begin{frame} %{{{
+\frametitle{LAPACK: *SYE* functions}
+%
 \begin{columns}[l]
 \column{9cm}
 \begin{enumerate}
@@ -981,10 +986,11 @@ xSTEIN
 \end{figure}
 %
 \end{columns}
-\end{frame}%}}}1
+\end{frame}%}}}
 
-\begin{frame} \frametitle{THE SVD ALGO:}
-\end{frame}%}}}1
+\begin{frame} \frametitle{THE SVD ALGO:}%{{{
+
+\end{frame}%}}}
 
 
 
