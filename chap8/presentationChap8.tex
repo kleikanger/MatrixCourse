@@ -67,8 +67,8 @@
 %\usepackage{babel}  
 
 
-\usetheme[secheader]{Berlin}
-%\usetheme[secheader]{Berkeley}
+%\usetheme[secheader]{Berlin}
+\usetheme[secheader]{Berkeley}
 \usecolortheme{seahorse}%}}}1
 
 \begin{document}
@@ -988,10 +988,51 @@ xSTEIN
 \end{columns}
 \end{frame}%}}}
 
-\begin{frame} \frametitle{THE SVD ALGO:}%{{{
-
+\begin{frame} %{{{
+\frametitle{THE SVD ALGO:}
+\begin{itemize}
+	\item Definition: 
+		%\begin{enumerate}
+		%	\item
+				The singular values of the matrix $A\in\mathbb C^{n\times m}$ is the 
+				square root of the simultaneous eigenvalues of the square symmetric matrices $A^TA$ and $AA^T$.
+		%	\item
+		%		The columns of $U$ are called the left singular vectors of $A$ and the columns and the 
+		%		columns of $V$ are called the right singular vectors of $A$.
+		%\end{enumerate}
+\end{itemize}
+		\begin{theorem}(The Singular Value Decomposition:)
+			Let $A$ be an $m\times n$ complex matrix of rank $r$. Then there exist an $m\times m$
+			orthogonal matrix $U$, an $n\times n$ orthogonal matrix $V$ and an $n\times m$ diagonal 
+			matrix $\Sigma$ such that 
+			\begin{equation}
+				A = U \Sigma V^\dagger,
+			\end{equation}
+			where $\diag (\Sigma) = (\sigma_1,\sigma_2,\dots,\sigma_r, 0,0,\dots,0,)$ and 
+			$\sigma_1\ge\sigma_2\dots\ge\sigma_r\ge0$.
+		\end{theorem}
 \end{frame}%}}}
 
+\begin{frame}
+\frametitle{THE SVD ALGO:}
+\begin{itemize}
+	\item The following procedure will produce a SVD-factorization of $A$. 
+		\begin{enumerate}
+			\item Form $C=A^\dagger A$.
+			\item Use the Symmetric QR - Algorithm to find 
+				$V^\dagger CV = \diag{(\sigma_{1}^2,\sigma_{2}^2,\cdots,\sigma_{m}^2)}$
+			\item Apply QR with column pivoting to $AV$  obtaining $U^T(AV)\Pi=R$.
+		\end{enumerate}
+	\item Now  $(U\Pi)^T A V = \Sigma$ is the SVD since:
+		\begin{enumerate}
+			\item $U$ is orthogonal and $AV$ have orthogonal columns. Then $R$ is diagonal.  
+				(It is easy to show that for a triangular matrix to be orthogonal it must be diagonal).
+			\item $V$ is orhogonal.
+		\end{enumerate}
+	\item Problem: unwise to multiply $A,\,A^\dagger$ since small elements  
+		$A_{ij}<\sqrt{\ts u}$ will disappear due to round off error.
+\end{itemize}
+\end{frame}
 
 
 %\begin{frame}
@@ -1019,7 +1060,7 @@ xSTEIN
 
 
 
-\begin{frame}[label=householders explained] \frametitle{Householders reflections explained}
+\begin{frame}[label=householders explained] \frametitle{Householders reflections explained}%{{{
 \begin{itemize}
 \item A Householder reflection is a rank 1 matrix on the form $H_1 = I - 2\frac{uu^T}{u^Tu}$.
 \item To find a Householder matrix such that $H_1 x \propto e_1$ we choose $u = x \pm \norm{x}_2 e_1$.
@@ -1032,10 +1073,9 @@ to remove the sub sub diagonal elements of the second column in the same manner,
 \item Hermitian matrices can be reduced to tridiagonal real and symmetric form (or real bidiagonal form ($H_aAH_b$)). General matrices can be brought to Hessenberg form.
 \end{itemize}
 \hyperlink{tridiagonalizationofa}{\beamergotobutton{return}}
-\end{frame}
-	
+\end{frame}%}}}
 
-\begin{frame}[label=dist span] \frametitle{Distance between two subspaces}
+\begin{frame}[label=dist span] \frametitle{Distance between two subspaces}%{{{
 \begin{itemize}
 \item Assume $A = [a_1, a_2, \dots, a_m],\, B = [b_1, b_2, \dots, b_m]$ are orthogonal matrices.
 \item Then
@@ -1067,6 +1107,6 @@ The distance is is $\text{max}
 Which is $0$ only in the case that $A=B$.\\
 \end{tiny}
 \hyperlink{framelb1}{\beamergotobutton{return}}
-\end{frame}
+\end{frame}%}}}
 \end{document}
 % vim:foldmethod=marker
