@@ -363,10 +363,10 @@ T=
 	\, a_i, b_i \in \mathbb R.
 \end{equation}
 	\item
-		The Householder reduction to tridiagonal form is an $\mathcal O(n^3)$ operation, and reduces the cost of the 
+		The Householder reduction to tridiagonal form reqiures $ 4/3 n^3$ flops, and reduces the cost of the 
 		QR - iterations from an $\mathcal O(n^3)$ operation to an $\mathcal O(n)$ operation. 
 		($\mathcal O(n^2)$ if the rotations are accumulated).
-	\item 
+	\item  
 		$T$ and $A$ has the same eigenvalues, while the eigenvectors 
 		is different. In general, if $Tv_i = \lambda_iv_i$, then $A H^T v_i = \lambda_i H^Tv_i$.
 \end{itemize}	
@@ -394,7 +394,11 @@ T=
 	%This can be made very intuitive if we remember from the QR algorithm 
 	%that the 
 	\item
-	Convergence towards the eigenvectors $q^{(k)}_1,\dots,q^{(k)}_{n-1}$
+	Convergence towards the eigenvectors 
+	\begin{equation}
+		v_1,\dots,v_{n-1} \gets
+		q^{(k)}_1,\dots,q^{(k)}_{n-1}
+	\end{equation}
 	proportional to $|\lambda_{n-1}/\lambda_{n}|$.
 	If $s\approx\lambda_{n}$, we increase the separation 
 	between the eigenvalues and thereby accelerate the convergence. 
@@ -501,13 +505,41 @@ T=
 		\end{enumerate}
 	\item Normally the eigenvalues are calculated with the same absolute accuracy, meaning that the 
 			smaller eigenvalues will have a larger relative error. (ref. art).
-	\item NB:
-		\begin{enumerate}
-			\item If the eigenvalues of the matrix is varying much, an QR-step with a large shift 
-				might degrade some of the smaller eigenvalues (ref art).
-		\end{enumerate}
 \end{itemize}
 \end{frame} %}}}1
+
+\begin{frame}
+	\frametitle{THE EXPLICIT QR ALGORITHM}
+\begin{itemize}
+	\item Problem: If the shifts are large compared to some of the diagonal elements, 
+				an QR-step with a large shift might degrade some of the smaller eigenvalues (ref art).
+	\item Example:
+		\begin{enumerate}
+			\item
+				When the norms of successive rows of the matrix A1 vary widely it might lead to error. 
+				Consider for example a matrix A with elements of the orders of
+				magnitude given by
+				\begin{align}
+					A= \smatrix{
+						A_{11}&1&0&0\\
+						1&10^{4}&10^{2}&0\\
+						0&10^{2}&10^{8}&10^{4}\\
+						0&0&10^{4}&10^{12}\\
+					}
+				\end{align}
+				which has eigenvalues of orders $\{1,10^4,10^8,10^\}$. 
+				After the first qr step, this matrix is singular for $A_{11}\in(-50,50)$.
+				Otherwise: A lot of round off error!
+				The first shift determined from the last $2\times 2$ matrix is then obviously of 
+				order $10^{12}$. Suppose we are
+				using a $10$ digit decimal computer. When the shift is subtracted from $A_{11}$,
+				small eigenvalue, which is well determined by the data, is inevitably lost. In this example the
+				difficulty could be avoided by reflecting the matrix in the secondary diagonal.
+		\end{enumerate}
+	\item Solution: Implicit shifts.
+\end{itemize}
+\end{frame}
+
 
 \begin{frame} % {{{1
 	\frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS}
@@ -562,7 +594,7 @@ T=
 \end{frame}%}}}1
 
 \begin{frame}  %{{{1
-\frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:}
+\frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS:}
 	\begin{itemize}
 		\item
 			To find a $U$ s.t. $Q_ke_1=Ue_1$ we must find a $\theta_1$ such that
@@ -590,7 +622,7 @@ T=
 \end{frame}%}}}1
 
 \begin{frame}  %{{{1
-\frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:}
+\frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS:}
 \begin{itemize}
 	\item
 	The next step is to show how $G_i,\,i>1$ can be constructed such that $U^TTU$ is tridiagonal.
@@ -647,7 +679,7 @@ T=
 \end{itemize}
 \end{frame}%}}}1
 
-\begin{frame} \frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} %{{{1
+\begin{frame} \frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS:} %{{{1
 		The $G_i$'s can be found by solving the following equation
 		\begin{align}
 			\smatrix{
@@ -747,7 +779,7 @@ $T$ as the Shur decomposition.
 \end{frame}%}}}1
 
 \begin{frame} %{{{
-\frametitle{THE QR ALGERITHM WITH IMPLICIT SHIFTS:} 
+\frametitle{THE QR ALGORITHM WITH IMPLICIT SHIFTS:} 
 \begin{itemize}
 	\item deflation = speedup. Ex: $\approx 26 \times 3$ flops $+$ formation of $G_1$.
 		\begin{align}
@@ -760,7 +792,7 @@ $T$ as the Shur decomposition.
 				0 &  0 & 0	& 0 	& 0 & \times \\
 			}
 		\end{align}
-	\item $D_k$ on reduced tridiagonal form = speedup. Ex: $\approx 25\times2$ flops $+$ formation of $G_1$.
+	\item $D_k$ on reduced tridiagonal form = speedup. Ex: $\approx 26\times2$ flops $+$ formation of $G_1$.
 		\begin{align}
 			T_k = \smatrix{
 				\times & 0 & 		0 	& 0 & 0 & 0 \\
@@ -914,23 +946,42 @@ $T$ as the Shur decomposition.
 							\\
 							\hline
 							\\
-							Power iteration 			& $v_i, \lambda_{i}=\max{(\{\lambda_i\})}$ & $\mathcal O(n^{2})$& Linear\\ 
 							Inverse iteration 			& $v_i$ (with imput $\lambda_{i})$ & $\mathcal O(n)$ (for tridiag. mat.) & Linear\\ 
 							Rayleigh quotient iteration & $v_i$, $\lambda_{i}$ & $\mathcal O(n)$ &	Cubic \\
 							Bisection (Sturm Sequence) method 	& The required $\lambda_i$ 	& $\mathcal O(n^2)$ & Linear \\
-							Bisection method 		& a $\lambda_i$ in a given inteval.	& $\mathcal O(n)$ & Linear \\
+							Bisection method 		& a $\lambda_i$ in a given interval.	& $\mathcal O(n)$ & Linear \\
 							QR algorithm 				& $\{\lambda_i\}$ and $\{v_i\}$ or only $\{\lambda_i\}$ & $\mathcal O(n^2)$ or $\mathcal O(n)$ & Cubic\\
-							Jacobi eigenvalue algorithm	& $\{\lambda_i\}$ 	& $\mathcal O\mathcal(n^3)$(**) & Quadratic \\
-							Divide-and-conquer 			& $\{\lambda_i\}$ 	& $\mathcal O\mathcal(n^{2})$(**) & \\
+							Divide-and-conquer 			& $\{\lambda_i\}$ 	&  & \\
 							\\
 							\hline
 							\hline
 						\end{tabular}
 					\end{Tiny}
 				\end{table}
-				\begin{tiny}
-					(**) Suited for parallellization.
-				\end{tiny}
+			\item Eigen solvers for symmetric matrices:
+				\begin{table}
+					\begin{Tiny}
+						\centering
+						\begin{tabular}{llll}
+							\hline
+							\hline
+							\\
+							Method & Output & Cost/Iteration & Convergence \\
+							\\
+							\hline
+							\\
+							Power iteration 			& $v_i, \lambda_{i}=\max{(\{\lambda_i\})}$ & $\mathcal O(n^{2})$& Linear\\ 
+							Inverse iteration 			& $v_i$ (with imput $\lambda_{i})$ & $\mathcal O(n^2)$ & Linear\\ 
+							Rayleigh quotient iteration & $v_i$, $\lambda_{i}$ & $\mathcal O(n^2)$ &	Cubic \\
+							Bisection method 		& a $\lambda_i$ in a given inteval.	& $\mathcal O(n)$ & Linear \\
+							Jacobi eigenvalue algorithm	& $\{\lambda_i\}$ 	& $\mathcal O\mathcal(n^3)$ & Quadratic \\
+							Parallel Jacobi& $\{\lambda_i\}$ &  & \\
+							\\
+							\hline
+							\hline
+						\end{tabular}
+					\end{Tiny}
+				\end{table}
 		\end{itemize}
 \end{frame}%}}}
 
@@ -996,7 +1047,7 @@ xSTEIN
 		%\begin{enumerate}
 		%	\item
 				The singular values of the matrix $A\in\mathbb C^{n\times m}$ is the 
-				square root of the simultaneous eigenvalues of the square symmetric matrices $A^TA$ and $AA^T$.
+				square root of the simultaneous eigenvalues of the square symmetric matrices $A^TA$ and $AA^T$. (?)
 		%	\item
 		%		The columns of $U$ are called the left singular vectors of $A$ and the columns and the 
 		%		columns of $V$ are called the right singular vectors of $A$.
@@ -1051,7 +1102,7 @@ xSTEIN
 							0& & & 0& d_n 
 						}
 					\end{align}
-					This is a $\mathcal O(n^3)$ operation.
+					This is a $\mathcal O(mn^2)$ operation, assuming that $m\ge n$).
 				\item The matrix $B^TB$ is real and tridiagonal and can be unitarily transformed to a diagonal matrix 
 						$\diag (\sigma_1^2, \sigma_2^2,\dots, \sigma_n^2)$ using the symmetric $QR$ algorithm.
 			\end{enumerate}
@@ -1141,46 +1192,196 @@ xSTEIN
 \frametitle{THE SVD ALGO}
 \begin{itemize}
 	\item The implicit Q-theorem only holds if the tridiagonal matrix is unreduced. 
-	\item This corresponds to 
+	\item We must have this in mind when we diagonalize $B$. 
 		\begin{enumerate}
 			\item
-				If one of diagonal element $f_k=0$ the problem decouples into two smaller:
+				If one of the off diagonal element $f_k=0$ the problem decouples into two smaller:
 				\begin{align}
 					B = 
 					\begin{matrix}
 						\smatrix{B_1 & 0 \\ 0 & B_2}
 					\end{matrix}
 				\end{align}
-			\item If one of the diagonal elements $d_k=0$ i .. p454.. %TODO
+			\item If one of the diagonal elements $d_k=0, k<n$ then we can zero an entire row in $B$
+				\begin{footnotesize}
 				\begin{align}
-					\smatrix
-					{
-						\times 	& \times & 0 & 0 & 0   \\
-						0 	& \times & \times & 0 & 0   \\
-						0 	& 0 & 0 & 0 & 0    \\
-						0 & 0 & 0 & \times & \times   \\
-						0 & 0 & 0 & 0 & \times  \\
-					}
+						&\smatrix
+						{
+							1 	& 0 & 0 & 0 & 0   \\
+							0 	& c & s & 0 & 0   \\
+							0 	& -s & c & 0 & 0    \\
+							0 & 0 & 0 & 1 & 0   \\
+							0 & 0 & 0 & 0 & 1  \\
+						}
+						\smatrix
+						{
+							\times 	& \times & 0 & 0 & 0   \\
+							0 	& 0 & \times & 0 & 0   \\
+							0 	& 0 & \times & \times & 0    \\
+							0 & 0 & 0 & \times & \times   \\
+							0 & 0 & 0 & 0 & \times  \\
+						}
+						=
+						\smatrix
+						{
+							\times 	& \times & 0 & 0 & 0   \\
+							0 	& 0 & 0 & + & 0   \\
+							0 	& 0 & \times & \times & 0    \\
+							0 & 0 & 0 & \times & \times   \\
+							0 & 0 & 0 & 0 & \times  \\
+						}\\
+						&\smatrix
+						{
+							1 & 0 & 0 & 0 & 0   \\
+							0 & c & 0 & s & 0   \\
+							0 & 0 & 1 & 0 & 0    \\
+							0 & -s & 0 & c & 0   \\
+							0 & 0 & 0 & 0 & 1  \\
+						}
+						\smatrix
+						{
+							\times 	& \times & 0 & 0 & 0   \\
+							0 	& 0 & 0 & + & 0   \\
+							0 	& 0 & \times & \times & 0    \\
+							0 & 0 & 0 & \times & \times   \\
+							0 & 0 & 0 & 0 & \times  \\
+						}
+						=
+						\smatrix
+						{
+							\times 	& \times & 0 & 0 & 0   \\
+							0 	& 0 & 0 & 0 & +   \\
+							0 	& 0 & \times & \times & 0    \\
+							0 & 0 & 0 & \times & \times   \\
+							0 & 0 & 0 & 0 & \times  \\
+						}\\
+						&\smatrix
+						{
+							1 & 0 & 0 & 0 & 0   \\
+							0 & c & 0 & 0 & s   \\
+							0 & 0 & 1 & 0 & 0    \\
+							0 & 0 & 0 & 1 & 0   \\
+							0 & -s & 0 & 0 & c  \\
+						}
+						\smatrix
+						{
+							\times 	& \times & 0 & 0 & 0   \\
+							0 	& 0 & 0 & 0 & +   \\
+							0 	& 0 & \times & \times & 0    \\
+							0 & 0 & 0 & \times & \times   \\
+							0 & 0 & 0 & 0 & \times  \\
+						}
+						=
+						\smatrix
+						{
+							\times 	& \times & 0 & 0 & 0   \\
+							0 	& 0 & 0 & 0 & 0   \\
+							0 	& 0 & \times & \times & 0    \\
+							0 & 0 & 0 & \times & \times   \\
+							0 & 0 & 0 & 0 & \times  \\
+						}
 				\end{align}
-				\item Both situations corresponds to $B^TB=\smatrix{T_1&0 \\ 0&T_2}$.
+				This situation corresponds to a degeneracy in the eigenvalues since $B^TB$ in this case have
+				a $2\times 2$ block with equal elements in the upper left block of $B^TB$.
+				\end{footnotesize}
+			\item If $k=n$ we can zero the last column using a similar strategy using column rotations (multiplying with the givens rotations from the right).
+				\item Both situations corresponds to a decoupled problem $B^TB=\smatrix{T_1&0 \\ 0&T_2}$.
 		\end{enumerate}
+\end{itemize}
+\begin{Tiny}
+	((note that $U^TB^TBU$ and $V^TB^TBV$ both has the same singular values on the diag)).
+\end{Tiny}
+\end{frame}%}}}
+
+\begin{frame}%{{{
+\frametitle{THE SVD ALGO}
+\begin{algo}[The SVD Algorithm]
+	\begin{footnotesize}
+		\textbf{Input: }
+		{
+%
+			The general matrix $A\in\mathbb R^{m\times n}$,
+%
+		}
+		\textbf{Output: }
+		{
+%
+			Overwrites $A$ with $U^TAV=D+E$ where $D$ is diagonal and $\norm E_{2} \approx \ts u \norm{E}_{2}$ and
+			$U\in\mathbb R^{m\times n},\, V\in\mathbb R^{m\times m}$ are orthogonal.
+%
+		}\\
+		\line(1,0){120}
+		\begin{algorithmic}
+%
+			\State{Compute the bidiagonalization $\smatrix{B\\0}\gets(U_1\dots U_{n})^TA(V_1\dots V_n-2))$}
+			\While{$q\le n$}
+			\For{$i=1:n-1$}
+				\If{$|b_{i,i+1}|\le\epsilon(|b_{ii}|+|b_{i+1,i+1}|)$}
+					\State{$b_{i,i+1}\gets0$}
+				\EndIf{}
+			\EndFor{}
+			\State{Find the largest $q$ and the smallest $p$ such that if
+				\begin{equation*}
+					D = 
+					\begin{matrix}
+						\\
+						\smatrix{B_{11} & 0 & 0 \\ 0 & B_{22} & 0 \\ 0 & 0 & B_{33}} 
+						& 
+						\begin{matrix}
+							p \\ n-p-q \\ q
+						\end{matrix}
+						\\
+						\begin{matrix}
+							p & n-p-q & q
+						\end{matrix}
+					\end{matrix},
+				\end{equation*}
+			}
+			\State{then $B_{33}$ is diagonal and $B_{22}$ has a nonzero superdiagonal}
+			\If{$q<n$}
+				\If
+					\State{if any subdiagonal iz zero, then zero the superdiagonal endry on the same row}
+				\Else{}
+					\State{Apply the Golub-Kahan step on $D_{22}:$}
+					\State{\hspace{4mm}$B=\text{diag}(I_p, U, I_{q+m-n})^T B\text{diag}(I_p, V, I_q) $}
+				\EndIf{}
+			\EndIf{}
+			\EndWhile{}
+%
+		\end{algorithmic}
+		\label{algSVDAlgorithm}
+		\line(1,0){120}
+	\end{footnotesize}
+\end{algo}
+\end{frame}%}}}
+
+\begin{frame}%{{{
+\frametitle{LAPACK AND SVD}
+\begin{itemize}
+	\item In the first step, the matrix is reduced to a bidiagonal matrix 
+		(xGEBRD or xGBBRD for banded matrices).
+	\item The second step is to compute the SVD of the bidiagonal matrix. 
+		%This takes O(mn2) floating-point operations (flops), assuming that m ≥ n (this formulation uses the big O notation). 
+		%The second step takes O(n) iterations, each costing O(n) flops. Thus, the first step is more expensive, and the overall cost is O(mn2) flops (Trefethen & Bau III 1997, Lecture 31).
+		Lapack uses two different strategies, where the second is much faster with multithreading.
+		\begin{enumerate}
+			\item Small matrices: A variant of the Golub-Kahan Algorithm (xBDSQR).
+			\item Large matrices: A variant of Divide-and-conquer $+$ Golub-Kahan (xBDSDC)
+		\end{enumerate}
+	\item $+$ a huge amounts of technicalities and optimizations.
 \end{itemize}
 \end{frame}%}}}
 
 \begin{frame}%{{{
-	\frametitle{THE SVD ALGO}
-	\begin{itemize}
-		\item  . %TODO
-	\end{itemize}
+\frametitle{LAST SLIDE}
+	\begin{bf}
+		\begin{large}
+			\begin{center}
+				Thank you for the attention!
+			\end{center}
+		\end{large}
+	\end{bf}
 \end{frame}%}}}
-
-		%The Golub-Kahan step 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% APPENDIX
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 \begin{frame}[label=householders explained] \frametitle{Householders reflections explained}%{{{
 		\begin{itemize}
