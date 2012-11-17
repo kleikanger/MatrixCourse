@@ -434,8 +434,8 @@ T=
 	\item <1-> We can shift all the eigenvalues $\lambda_i\gets\lambda_{i}-s$ 
 	by setting $T\gets T-sI$.
 	\item <2->
-	If $s$ is close to an eigenvalue then 
-	$T_{n-1,n}$ will be small after a $QR$ step with shift $s$. 
+	If $s$ is close to an eigenvalue, then 
+	the convergence of the corresponding eigenvector will increase.
 	\begin{enumerate}
 	%This can be made very intuitive if we remember from the QR algorithm 
 	%that the 
@@ -447,11 +447,11 @@ T=
 %		q^{(k)}_1,\dots,q^{(k)}_{n-1}
 %	\end{equation}
 	proportional to $|\lambda_{n}/\lambda_{n-1}|$.
-	If $s\approx\lambda_{n}$, we increase the ratio
-	between the eigenvalues and thereby accelerate the convergence. 
+	If $s\approx\lambda_{n}$ the convergence increase.%, we increase the ratio
+	%between the eigenvalues and thereby accelerate the convergence. 
 	\end{enumerate}
-	\item <4-> Wilkinson Shifts: The eigenvalue of the $2\times2$ block $T(n:n+1, n:n+1)$, which
-	is closest to $T{n+1,n+1}$. %because of the tridiagonal form of T.
+	\item <4-> Wilkinson Shifts: The eigenvalue of the $2\times2$ block $T(n-1:n, n-1:n)$, which
+	is closest to $T_{n,n}$. %because of the tridiagonal form of T.
 \end{itemize}
 
 \column{5cm}
@@ -558,7 +558,7 @@ Eigenvalues: $\{5.7424, 4.1477, 2.0317, \ts {-1.9218} \}$
 	\frametitle{THE EXPLICIT QR ALGORITHM}
 \begin{itemize}
 	\item <1-> Problem: If the shifts are large compared to some of the diagonal elements, 
-				a QR-step with a large shift might degrade some of the smaller eigenvalues (ref art).
+		the result is large round off errors.
 	\item <2-> Example:
 		\begin{enumerate}
 			\item <2->
@@ -1047,42 +1047,51 @@ $T$ as the Shur decomposition.
 						\end{tabular}
 					\end{Tiny}
 				\end{table}
-			\item Eigen solvers for symmetric matrices:
-				\begin{table}
-					\begin{Tiny}
-						\centering
-						\begin{tabular}{llll}
-							\hline
-							\hline
-							\\
-							Method & Output & Cost/Iteration & Convergence \\
-							\\
-							\hline
-							\\
-							Power iteration 			& $v_i, \lambda_{i}=\max{(\{\lambda_i\})}$ & $\mathcal O(n^{2})$& Linear\\ 
-							Inverse iteration 			& $v_i$ (with imput $\lambda_{i})$ & $\mathcal O(n^2)$ & Linear\\ 
-							Rayleigh quotient iteration & $v_i$, $\lambda_{i}$ & $\mathcal O(n^2)$ &	Cubic \\
-							Bisection method 		& a $\lambda_i$ in a given inteval.	& $\mathcal O(n)$ & Linear \\
-							Jacobi eigenvalue algorithm	& $\{\lambda_i\}$ 	& $\mathcal O\mathcal(n^3)$ & Quadratic \\
-							Parallel Jacobi& $\{\lambda_i\}$ &  & \\
-							\\
-							\hline
-							\hline
-						\end{tabular}
-					\end{Tiny}
-				\end{table}
+			\item 
+				\begin{enumerate}
+					\item If only a few of the eigenvectors are required, then it is cheaper not to accumulate the similarity 
+						transformations and use inverse iterations to find the eigenvectors. 
+					\item If only some of the eigenvalues are required it is cheaper to use the bisection methods.
+					\item The paralell algorithms (Divide-and-conquer) outperforms the other algorithms. 
+				\end{enumerate}
+			%	Eigen solvers for symmetric matrices:
+			%	\begin{table}
+			%		\begin{Tiny}
+			%			\centering
+			%			\begin{tabular}{llll}
+			%				\hline
+			%				\hline
+			%				\\
+			%				Method & Output & Cost/Iteration & Convergence \\
+			%				\\
+			%				\hline
+			%				\\
+			%				Power iteration 			& $v_i, \lambda_{i}=\max{(\{\lambda_i\})}$ & $\mathcal O(n^{2})$& Linear\\ 
+			%				Inverse iteration 			& $v_i$ (with imput $\lambda_{i})$ & $\mathcal O(n^2)$ & Linear\\ 
+			%				Rayleigh quotient iteration & $v_i$, $\lambda_{i}$ & $\mathcal O(n^2)$ &	Cubic \\
+			%				Bisection method 		& a $\lambda_i$ in a given inteval.	& $\mathcal O(n)$ & Linear \\
+			%				Jacobi eigenvalue algorithm	& $\{\lambda_i\}$ 	& $\mathcal O\mathcal(n^3)$ & Quadratic \\
+			%				Parallel Jacobi& $\{\lambda_i\}$ &  & \\
+			%				\\
+			%				\hline
+			%				\hline
+			%			\end{tabular}
+			%		\end{Tiny}
+			%	\end{table}
 		\end{itemize}
 \end{frame}%}}}
-\begin{frame}%{{{
-\frametitle{CONCLUDING REMARKS}
-	\begin{itemize}
-		\item If only a few of the eigenvectors are required, then it is cheaper not to accumulate the similarity 
-			transformations and use inverse iterations to find the eigenvectors. 
-		\item If only some of the eigenvalues are required it is cheaper to use the bisection methods.
-		\item The paralell algorithms (Divide-and-conquer) outperforms the other algorithms when many cores are 
-			aviable.
-	\end{itemize}
-\end{frame}%}}}
+
+%\begin{frame}%{{{
+%\frametitle{CONCLUDING REMARKS}
+%	\begin{itemize}
+%		\item If only a few of the eigenvectors are required, then it is cheaper not to accumulate the similarity 
+%			transformations and use inverse iterations to find the eigenvectors. 
+%		\item If only some of the eigenvalues are required it is cheaper to use the bisection methods.
+%		\item The paralell algorithms (Divide-and-conquer) outperforms the other algorithms when many cores are 
+%			available.
+%	\end{itemize}
+%\end{frame}%}}}
+
 \begin{frame} %{{{
 \frametitle{LAPACK: *SYE* functions}
 %
@@ -1168,7 +1177,14 @@ xSTEIN
 			\item $V$ is orhogonal.
 		\end{enumerate}
 	\item <3-> Problem: unwise to multiply $A,\,A^\dagger$ since small elements  
-		$A_{ij}<\sqrt{\ts u}$ will disappear due to round off error.
+		$A_{ij}<\sqrt{\ts u}$ may lead to loss of information.
+		\begin{enumerate}
+			\item Ex:
+				\begin{equation}
+					A = \smatrix{1&1\\10^{-3}&0\\0&10^{-6}},\, \text{float}(A^TA) = \smatrix{1&1\\1&1}
+				\end{equation}
+		is singuar in float arithmetics.
+		\end{enumerate}
 \end{itemize}
 \end{frame}%}}}
 \begin{frame}%{{{
