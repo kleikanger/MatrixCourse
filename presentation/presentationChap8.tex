@@ -102,13 +102,13 @@ extendedchars=true}
 \item The QR - algorithm for Hermitian matrices.
 	\begin{enumerate}
 		\item The QR - algorithm explained.
-			\begin{enumerate}
+			\begin{enumerate}[$\bullet$]
 				\item The Power Method.
 				\item Orthogonal Subspace Iterations.
 				\item The basic QR algorithm.
-			\end{enumerate}
+			\end{enumerate}		
 		\item Optimizations of the QR - algorithm.
-			\begin{enumerate}
+			\begin{enumerate}[$\bullet$]
 				\item Working with tridiagonal matrices.
 				\item Explicit and implicit shifts
 			\end{enumerate}
@@ -532,6 +532,108 @@ Eigenvalues: $\{5.7424, 4.1477, 2.0317, \ts {-1.9218} \}$
 	the off diagonal elements gets $\Rightarrow$ The convergence bets better for each iteration.
 \end{itemize}
 \end{frame} %}}}1
+\begin{frame} %{{{1
+\frametitle{CONVERGENCE}
+\begin{columns}%
+\column{6cm}
+\begin{figure}%{{{3
+\begin{center}
+\includegraphics[height=3.8cm]{12x12randn_eigv_conv_QRstandard.png}
+	\begin{scriptsize}
+	\begin{tabular}{ll}
+		\hline
+		\hline
+		\\
+		$\lambda_1=
+		-6.544395991691173
+		$ & $\lambda_2=
+		6.583845448270952
+		$ \\ $\lambda_3=
+		-4.759692498020273
+		$ & $\lambda_4=
+		4.227228411195598
+		$ \\ $\lambda_5=
+		-3.718806489258647
+		$ & $\lambda_6=
+		3.406092305333206
+		$ \\ $\lambda_7=
+		-2.508608861858869
+		$ & $\lambda_8=
+		2.480820818364306
+		$ \\ $\lambda_9=
+		-1.768319271480477
+		$ & $\lambda_{10}=
+		0.731101702075869
+		$ \\ $\lambda_{11}=
+		-0.4860591502185416
+		$ & $\lambda_{12}=
+		0.4459711429826421
+		$ \\
+		\\
+		\hline
+		\hline
+	\end{tabular}
+	\end{scriptsize}
+\caption{
+	The basic QR- algorithm without shifts. The convergence of the leading principal submatrix
+	of dimension $k$ is $\propto |(\lambda_k/\lambda_{k+1})|^i$
+}
+\end{center}
+\end{figure}
+%
+%
+%
+\column{6cm}
+%
+\begin{figure}
+\begin{center}
+\includegraphics[height=3.8cm]{12x12randn_eigv_conv_QRfull.png}
+	\begin{scriptsize}
+	\begin{tabular}{ll}
+		\hline
+		\hline
+		\\
+		$\lambda_1=
+		-6.544395991691173
+		$ & $\lambda_2=
+		6.583845448270952
+		$ \\ $\lambda_3=
+		-4.759692498020273
+		$ & $\lambda_4=
+		-3.718806489258647
+		$ \\ $\lambda_5=
+		2.480820818364306
+		$ & $\lambda_6=
+		4.227228411195598
+		$ \\ $\lambda_7=
+		3.406092305333206
+		$ & $\lambda_8=
+		-2.508608861858869
+		$ \\ $\lambda_9=
+		-1.768319271480477
+		$ & $\lambda_{10}=
+		-0.4860591502185416
+		$ \\ $\lambda_{11}=
+		0.731101702075869
+		$ & $\lambda_{12}=
+		0.4459711429826421
+		$ \\
+		\\
+		\hline
+		\hline
+	\end{tabular}
+	\end{scriptsize}
+\caption{
+	The full implicit QR- algorithm with Wilkinson shifts and deflation. Quadratic convergence
+	of the shifted eigenvalue. 
+}
+\end{center}
+\end{figure}
+%
+%
+%
+\end{columns}
+\end{frame}%}}}1
 \begin{frame}  %{{{1
 \frametitle{THE QR ALGORITHM WITH EXPLICIT SHIFTS}
 \begin{itemize}
@@ -555,7 +657,7 @@ Eigenvalues: $\{5.7424, 4.1477, 2.0317, \ts {-1.9218} \}$
 \end{itemize}
 \end{frame} %}}}1
 \begin{frame}%{{{
-	\frametitle{THE EXPLICIT QR ALGORITHM}
+	\frametitle{THE QR ALGORITHM WITH EXPLICIT SHIFTS}
 \begin{itemize}
 	\item <1-> Problem: If the shifts are large compared to some of the diagonal elements, 
 		the result is large round off errors.
@@ -896,108 +998,6 @@ $T$ as the Shur decomposition.
 		\lst
 	\end{itemize}
 \end{frame}%}}}
-\begin{frame} %{{{1
-\frametitle{CONVERGENCE AND ERROR}
-\begin{columns}%
-\column{6cm}
-\begin{figure}%{{{3
-\begin{center}
-\includegraphics[height=3.8cm]{12x12randn_eigv_conv_QRstandard.png}
-	\begin{scriptsize}
-	\begin{tabular}{ll}
-		\hline
-		\hline
-		\\
-		$\lambda_1=
-		-6.544395991691173
-		$ & $\lambda_2=
-		6.583845448270952
-		$ \\ $\lambda_3=
-		-4.759692498020273
-		$ & $\lambda_4=
-		4.227228411195598
-		$ \\ $\lambda_5=
-		-3.718806489258647
-		$ & $\lambda_6=
-		3.406092305333206
-		$ \\ $\lambda_7=
-		-2.508608861858869
-		$ & $\lambda_8=
-		2.480820818364306
-		$ \\ $\lambda_9=
-		-1.768319271480477
-		$ & $\lambda_{10}=
-		0.731101702075869
-		$ \\ $\lambda_{11}=
-		-0.4860591502185416
-		$ & $\lambda_{12}=
-		0.4459711429826421
-		$ \\
-		\\
-		\hline
-		\hline
-	\end{tabular}
-	\end{scriptsize}
-\caption{
-	The basic QR- algorithm without shifts. The convergence of the leading principal submatrix
-	of dimension $k$ is $\propto |(\lambda_k/\lambda_{k+1})|^i$
-}
-\end{center}
-\end{figure}
-%
-%
-%
-\column{6cm}
-%
-\begin{figure}
-\begin{center}
-\includegraphics[height=3.8cm]{12x12randn_eigv_conv_QRfull.png}
-	\begin{scriptsize}
-	\begin{tabular}{ll}
-		\hline
-		\hline
-		\\
-		$\lambda_1=
-		-6.544395991691173
-		$ & $\lambda_2=
-		6.583845448270952
-		$ \\ $\lambda_3=
-		-4.759692498020273
-		$ & $\lambda_4=
-		-3.718806489258647
-		$ \\ $\lambda_5=
-		2.480820818364306
-		$ & $\lambda_6=
-		4.227228411195598
-		$ \\ $\lambda_7=
-		3.406092305333206
-		$ & $\lambda_8=
-		-2.508608861858869
-		$ \\ $\lambda_9=
-		-1.768319271480477
-		$ & $\lambda_{10}=
-		-0.4860591502185416
-		$ \\ $\lambda_{11}=
-		0.731101702075869
-		$ & $\lambda_{12}=
-		0.4459711429826421
-		$ \\
-		\\
-		\hline
-		\hline
-	\end{tabular}
-	\end{scriptsize}
-\caption{
-	The full implicit QR- algorithm with Wilkinson shifts and deflation. Quadratic convergence
-	of the shifted eigenvalue. 
-}
-\end{center}
-\end{figure}
-%
-%
-%
-\end{columns}
-\end{frame}%}}}1
 \begin{frame} %{{{
 \frametitle{OVERVIEW:}
 		\begin{itemize}
@@ -1080,7 +1080,6 @@ $T$ as the Shur decomposition.
 			%	\end{table}
 		\end{itemize}
 \end{frame}%}}}
-
 %\begin{frame}%{{{
 %\frametitle{CONCLUDING REMARKS}
 %	\begin{itemize}
@@ -1091,7 +1090,6 @@ $T$ as the Shur decomposition.
 %			available.
 %	\end{itemize}
 %\end{frame}%}}}
-
 \begin{frame} %{{{
 \frametitle{LAPACK: *SYE* functions}
 %
@@ -1142,7 +1140,7 @@ xSTEIN
 		%\begin{enumerate} %..
 		%	\item
 				The singular values of the matrix $A\in\mathbb C^{n\times m}$ is the 
-				square root of the eigenvalues of the square symmetric matrices $A^TA$.% and $AA^T$.
+				square root of the eigenvalues of the square symmetric matrices $A^\dagger A$.% and $AA^T$.
 		%  	\item
 		%		The columns of $U$ are called the left singular vectors of $A$ and the columns and the 
 		%		columns of $V$ are called the right singular vectors of $A$.
@@ -1391,9 +1389,9 @@ xSTEIN
 				\item Both situations corresponds to a decoupled problem $B^TB=\smatrix{T_1&0 \\ 0&T_2}$.
 		\end{enumerate}
 \end{itemize}
-\begin{Tiny}
-	((note that $U^TB^TBU$ and $V^TB^TBV$ both has the same singular values on the diag)).
-\end{Tiny}
+%\begin{Tiny}
+%	((note that $U^TB^TBU$ and $V^TB^TBV$ both has the same singular values on the diag)).
+%\end{Tiny}
 \end{frame}%}}}
 \begin{frame}%{{{
 \frametitle{THE SVD ALGO}
